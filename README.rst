@@ -8,7 +8,7 @@ Getting Jiggy with Proto - Boost'Con 2011 Tutorial Hands-on Session
 Contents and Objectives
 -----------------------
 
-Embedded Domain Specific Languages are actually rising as a design of choice to handle small to middle sized 
+Embedded Domain Specific Languages (EDSL) are actually rising as a design of choice to handle small to middle sized 
 problem in a declarative and efficient way. Among others, C++ is actually a pretty interesting choice as a 
 host language for such development. Idioms like Expression Templates have been demonstrated to be the technique
 of choice for such situation. However, they always look like some dark arcane secrets and scare potential developers
@@ -16,7 +16,7 @@ away.
 
 Thanks to libraries like Boost.Proto, the design and development of Expression Templates is becoming easier and easier.
 More than Expression Templates, the main strength of Proto is to enable compiler-like code to be written and applied
-on lazyly evaluable expression. Combined to the flexibility of C++ in terms of operator and function overloading, making
+on lazily evaluable expression. Combined to the flexibility of C++ in terms of operator and function overloading, making
 EDSL that works and are not a mess to maintain is possible.
 
 This three hours tutorial will try to cover the basic and intermediate ground of Proto and will demonstrate that 
@@ -55,7 +55,7 @@ but how they can actually restructure them. We'll tackle on the problem of compu
 analytical derivative of a given expression using the good ol' derivation rules. We'll see how
 various details of the derivation process will lead us to define new elements in our grammar and
 how those simple rules can actually be extended to support partial derivation. After this part,
-our small calculator should now support arbitrary partial derivative of multipel variables functions.
+our small calculator should now support arbitrary partial derivative of multiple variables functions.
 
 Part 3 - Algebraic Simplification
 :::::::::::::::::::::::::::::::::
@@ -69,7 +69,7 @@ Conclusion - We Finally Made It !
 :::::::::::::::::::::::::::::::::
 At the end of the tutorial, we'll end up with a fully functional and extensible analytical
 function EDSL supporting derivatives and partial derivatives, a way to simplify and
-evaluate expressions and a smalle xtension mechanism. This tutorial will have covered the
+evaluate expressions and a small extension mechanism. This tutorial will have covered the
 main parts of Boost.Proto how it interacts with other Boost components.
 
 ----------
