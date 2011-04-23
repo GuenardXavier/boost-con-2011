@@ -29,7 +29,7 @@
 struct variable_tag {};
 
 /*******************************************************************************
- * When now builds instance of a proto terminal type.
+ * We now build our instance of a proto terminal type.
  * Note :
  *  - how we use variable_tag as a mark-up inside boost::proto terminal
  *  - the fact that _x is constructed as a POD
@@ -43,16 +43,16 @@ boost::proto::terminal< variable_tag >::type const _x = {{}};
 
 int main()
 {
-  /*******************************************************************************
+  /*****************************************************************************
    * We can build any kind of expression involving _x and any existing C++
    * operators. Note that none of these expression actually do something
    * except for capturing the AST structure.
-   ******************************************************************************/
+   ****************************************************************************/
   _x %= _x + 3 * ~(_x >> 6);
 
-  /*******************************************************************************
+  /*****************************************************************************
    * We can actually look at the underlying tree structure of such expressions
    * using the handy boost::proto::display_expr function.
-   ******************************************************************************/
+   ****************************************************************************/
   boost::proto::display_expr( _x %= _x + 3 * ~(_x >> 6) );
 }
