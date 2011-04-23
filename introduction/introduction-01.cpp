@@ -87,7 +87,7 @@ struct  analytical_function
 boost::proto::terminal< variable_tag >::type const _x = {{}};
 
 /*******************************************************************************
- * Done ! Now we can actually verify that our proto AST conforms our wishes
+ * Done ! Now we can actually verify that our proto AST conforms to our wishes
  *
  * We still can build any kind of expression involving _x and any existing C++
  * operators. But now we can statically check if this AST is conforming to our
@@ -97,9 +97,6 @@ boost::proto::terminal< variable_tag >::type const _x = {{}};
 template<class Expression> inline void
 check_for_match( Expression const& xpr )
 {
-  // The macro check
-  BOOST_PROTO_ASSERT_MATCHES( xpr, analytical_function );
-
   boost::proto::display_expr(xpr);
 
   // The meta-check

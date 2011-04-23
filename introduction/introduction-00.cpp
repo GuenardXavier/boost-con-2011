@@ -32,7 +32,7 @@ struct variable_tag {};
  * We now build our instance of a proto terminal type.
  * Note :
  *  - how we use variable_tag as a mark-up inside boost::proto terminal
- *  - the fact that _x is constructed as a POD
+ *  - the fact that _x is constructed as a POD (the infamous {{}})
  ******************************************************************************/
 boost::proto::terminal< variable_tag >::type const _x = {{}};
 
