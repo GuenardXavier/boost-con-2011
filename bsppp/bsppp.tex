@@ -6,8 +6,8 @@
    A BSP distributed vector is a vector where each element lives on a different BSP node
   \begin{itemize}
   \footnotesize
+  \item \texttt{<<v>>} : build a vector from value or a function $v$
   \item \texttt{\$v\$} : access to the local vector element
-  \item \texttt{<<v>>} : build a vector from value $v$
   \item A parallel vector of type $'a$ has type $par 'a$
   \end{itemize}
   \end{block}
@@ -21,7 +21,7 @@
    \begin{itemize}
   \footnotesize
   \item Replicates a parallel vector around all BSP nodes
-  \item Prototype: $proj : par 'a -> (int-> 'a)$
+  \item Prototype: $proj : par\ 'a -> par\ (int-> 'a)$
   \end{itemize}
   \end{block}
 
@@ -38,7 +38,7 @@
    \begin{itemize}
   \footnotesize
   \item Generic all-to-all communications function
-  \item Prototype: $put : par (int-> 'a) -> par (int-> 'a)$
+  \item Prototype: $put : par\ (int\ ->\ 'a)\ ->\ par\ (int\ ->\ 'a)$
   \end{itemize}
   \end{block}
 
@@ -67,6 +67,23 @@
 \frame
 {
   \frametitle{From BSML to BSP++}
+  \begin{block}{Why looking at BSML}  
+  \begin{itemize}
+  \footnotesize
+   \item Provides a compact interface
+   \item It is functionnal
+   \item BSML likes playign with lambda and so do we
+  \end{itemize}
+  \end{block}{}
+
+  \begin{block}{The Plan}  
+  \begin{itemize}
+  \footnotesize
+   \item Implement BSML interface and abstarction ic C++
+   \item Try to work on the functionnal side to limit errors
+   \item Try to play nice with C++ functionnal idioms
+  \end{itemize}
+  \end{block}{}
 }
 
 
@@ -93,6 +110,15 @@
 \frame
 {
   \frametitle{Support for Hybrid programming}
+
+}
+
+\frame
+{
+  \frametitle{Support for Hybrid programming}
+  \begin{center}
+  \pgfuseimage{hybrid}
+  \end{center}
 }
 
 \frame
@@ -100,14 +126,5 @@
   \frametitle{Support for Hybrid programming}
 }
 
-\frame
-{
-  \frametitle{Support for Hybrid programming}
-}
-
-\frame
-{
-  \frametitle{BSP++ Container and Algorithms}
-}
 
 
