@@ -1,0 +1,113 @@
+\frame
+{
+  \frametitle{BSML primitives}
+  \begin{block}{Distributed Vector}
+  \footnotesize
+   A BSP distributed vector is a vector where each element lives on a different BSP node
+  \begin{itemize}
+  \footnotesize
+  \item \texttt{\$v\$} : access to the local vector element
+  \item \texttt{<<v>>} : build a vector from value $v$
+  \item A parallel vector of type $'a$ has type $par 'a$
+  \end{itemize}
+  \end{block}
+}
+
+\frame
+{
+  \frametitle{BSML primitives}
+  \begin{block}{The \texttt{proj} function}
+  \footnotesize
+   \begin{itemize}
+  \footnotesize
+  \item Replicates a parallel vector around all BSP nodes
+  \item Prototype: $proj : par 'a -> (int-> 'a)$
+  \end{itemize}
+  \end{block}
+
+  \begin{block}{Semantic of $proj \, v$}
+  \begin{center}\pgfuseimage{bsp_proj}\end{center}
+  \end{block}
+}
+
+\frame
+{
+  \frametitle{BSML primitives}
+  \begin{block}{The \texttt{put} function}
+  \footnotesize
+   \begin{itemize}
+  \footnotesize
+  \item Generic all-to-all communications function
+  \item Prototype: $put : par (int-> 'a) -> par (int-> 'a)$
+  \end{itemize}
+  \end{block}
+
+  \begin{block}{Semantic of $put \, vf$}
+  \begin{center}\pgfuseimage{bsp_put}\end{center}
+  \end{block}
+}
+
+\frame
+{
+  \frametitle{A sample BSML Code}
+  \begin{block}{BSML Inner Product}
+  \lstbsml
+  \end{block}
+
+  \begin{block}{How does it works}<2->
+  \begin{itemize}
+  \footnotesize
+  \item Build a distributed vector from $v[i]^2$ in parallel
+  \item Exchange partial results with all nodes
+  \item Perform a final reduction
+  \end{itemize}
+  \end{block}
+}
+
+\frame
+{
+  \frametitle{From BSML to BSP++}
+}
+
+
+\frame
+{
+  \frametitle{BSP++ primitives}
+}
+
+\frame
+{
+  \frametitle{BSP++ primitives}
+}
+
+\frame
+{
+  \frametitle{BSP++ primitives}
+}
+
+\frame
+{
+  \frametitle{A sample BSP++ code}
+}
+
+\frame
+{
+  \frametitle{Support for Hybrid programming}
+}
+
+\frame
+{
+  \frametitle{Support for Hybrid programming}
+}
+
+\frame
+{
+  \frametitle{Support for Hybrid programming}
+}
+
+\frame
+{
+  \frametitle{BSP++ Container and Algorithms}
+}
+
+

@@ -1,0 +1,11 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% BSML inner product
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\lstset{basicstyle=\tiny\ttfamily,frame=none,aboveskip=0bp,breaklines=true,belowskip=0bp,language=C++,showspaces=false, showstringspaces=false}\defverbatim[colored]\lstbsml{%
+\begin{lstlisting}
+let inner_product v =
+  let local = << Array.fold_left (+.) (Array.map2 (*.) $v$ $v$) >>
+    in let gathered = proj local
+      in Array.fold_left (+.) (Array.make gathered nprocs) ;;
+\end{lstlisting}}
+
