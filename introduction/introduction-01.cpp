@@ -77,7 +77,7 @@ struct  analytical_function
  *                       | analytical_function / analytical_function
  *
  * One last thing, note as we didn't have to define any operator precedence
- * relations. All proto overloaded operator+ follows the natural rules for
+ * relations. All proto overloaded operators follow the natural rules of
  * their C++ counter-part. Keep this in mind when you devise your grammar.
  ******************************************************************************/
 
