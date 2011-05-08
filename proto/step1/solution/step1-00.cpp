@@ -77,7 +77,7 @@ struct  analytical_expression
   BOOST_PROTO_EXTENDS_USING_ASSIGN(analytical_expression)
 
   /***************************************************************************
-   * Provides the 4 operator() overloads and amke it a Callable Object while
+   * Provides the operator() overloads and amke it a Callable Object while
    * we are at it.
    **************************************************************************/
   typedef double result_type;
@@ -93,11 +93,6 @@ struct  analytical_expression
   }
 
   result_type operator()(double v0,double v1,double v2) const
-  {
-    return v0;
-  }
-
-  result_type operator()(double v0,double v1,double v2,double v3) const
   {
     return v0;
   }
