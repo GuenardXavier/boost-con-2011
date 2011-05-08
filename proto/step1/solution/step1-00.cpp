@@ -46,46 +46,67 @@
 /*******************************************************************************
  * First we define the Domain that will tie our (currentl forward declared)
  * Expression type to our grammar.
- *
- * The documentation about Domain and Generator is located at
- * http://tinyurl.com/proto-domain
- *
  ******************************************************************************/
 template<typename AST>
 struct analytical_expression;
 
-/*
- * TODO: Create a class analytical_domain that bounds analytical_expression to
- * the analytical_function grammar.
- */
+/*******************************************************************************
+ * The analytical_domain inherits from proto::domain.
+ ******************************************************************************/
+struct  analytical_domain
+      : boost::proto::domain< boost::proto::generator<analytical_expression> >
+{};
 
 /*******************************************************************************
  * Once done, we can build our analytical_expression class and give it our
  * interface. We want to be able to call operator() on our analytical formula
  * to evaluate them at a given set of variable.
- *
- * The documentation about Extension is located at
- * http://tinyurl.com/proto-extends
- *
  ******************************************************************************/
-
-/*
- * TODO: Complete analytical_expression to be tied to its Domain and to provide
- * a now empty set of operator()
- */
 template<typename AST>
-struct analytical_expression
+struct  analytical_expression
+      : boost::proto::extends<AST,analytical_expression<AST>,analytical_domain>
 {
-  // Some methods
+  typedef boost::proto::
+          extends<AST,analytical_expression<AST>,analytical_domain> extendee;
+
+  /*******************************************************************************
+   * Expression must be constructible from an AST
+  ******************************************************************************/
+  analytical_expression(AST const& ast = AST()) : extendee(ast) {}
+
+  BOOST_PROTO_EXTENDS_USING_ASSIGN(analytical_expression)
+
+  /***************************************************************************
+   * Provides the 4 operator() overloads and amke it a Callable Object while
+   * we are at it.
+   **************************************************************************/
+  typedef double result_type;
+
+  result_type operator()(double v0) const
+  {
+    return v0;
+  }
+
+  result_type operator()(double v0,double v1) const
+  {
+    return v0;
+  }
+
+  result_type operator()(double v0,double v1,double v2) const
+  {
+    return v0;
+  }
+
+  result_type operator()(double v0,double v1,double v2,double v3) const
+  {
+    return v0;
+  }
 };
 
 /*******************************************************************************
  * Last step, we have to redefine _x to be an analytical_expression
  ******************************************************************************/
-
-/*
- * TODO: Modify x_ definition to match analytical_expression
- */
+analytical_expression< boost::proto::terminal< variable_tag >::type > const _x;
 
 /*******************************************************************************
  * Great ! Now we can still build expressions like before following the same
@@ -95,7 +116,5 @@ struct analytical_expression
 
 int main()
 {
-  /*
-   * TODO: Test if your new expression still pass the check_for_match
-   */
+  check_for_match( 3*_x + 1.f/_x);
 }
