@@ -1,0 +1,341 @@
+\documentclass{beamer}
+
+\mode<presentation>
+{
+  \usetheme{Darmstadt}
+  % or ...
+
+  \setbeamercovered{transparent}
+  % or whatever (possibly just delete it)
+}
+\setbeamertemplate{navigation symbols}{} 
+
+\usepackage[utf8x]{inputenc}
+\usepackage{amsmath} 
+\usepackage{listings}
+\usepackage{multicol}
+
+%\usepackage{times}
+%\usepackage[T1]{fontenc}
+% Or whatever. Note that the encoding and the font should match. If T1
+% does not look nice, try deleting the line with the fontenc.
+
+\lstset{basicstyle=\ttfamily}
+
+
+\title%[Short Paper Title] % (optional, use only with long paper titles)
+{Practical SIMD acceleration with Boost.SIMD}
+
+%\subtitle
+%{Include Only If Paper Has a Subtitle}
+
+\author%[Author, Another] % (optional, use only with lots of authors)
+{Mathias Gaunard  \and Joël Falcou}
+% - Give the names in the same order as the appear in the paper.
+% - Use the \inst{?} command only if the authors have different
+%   affiliation.
+
+\institute[MetaScale] % (optional, but mostly needed)
+{MetaScale Inc.}
+% - Use the \inst command only if there are several affiliations.
+% - Keep it simple, no one is interested in your street address.
+
+\date%[CFP 2003] % (optional, should be abbreviation of conference name)
+{Boostcon 2011}
+% - Either use conference name or its abbreviation.
+% - Not really informative to the audience, more for people (including
+%   yourself) who are reading the slides online
+
+\subject{Computer Science}
+% This is only inserted into the PDF information catalog. Can be left
+% out. 
+
+
+
+% If you have a file called "university-logo-filename.xxx", where xxx
+% is a graphic format that can be processed by latex or pdflatex,
+% resp., then you can add a logo as follows:
+
+\pgfdeclareimage[height=0.5cm]{university-logo}{logo}
+\logo{\pgfuseimage{university-logo}}
+
+
+
+% Delete this, if you do not want the table of contents to pop up at
+% the beginning of each subsection:
+%\AtBeginSubsection[]
+%{
+%  \begin{frame}<beamer>
+%    \frametitle{Outline}
+%    \tableofcontents[currentsection,currentsubsection]
+%  \end{frame}
+%}
+
+
+% If you wish to uncover everything in a step-wise fashion, uncomment
+% the following command: 
+
+%\beamerdefaultoverlayspecification{<+->}
+
+
+\begin{document}
+
+\begin{frame}
+\titlepage
+\end{frame}
+
+\section{Introduction}
+
+\subsection{SIMD}
+\begin{frame}
+	\frametitle{What's SIMD?}
+
+	\begin{itemize}
+		\item Single Instruction, Multiple Data
+		\item Operations you can perform on NxT elements
+		      packed within a single register
+		\item Up to N times faster than doing it element per element
+		      with the ALU or the FPU
+	\end{itemize}
+
+\end{frame}
+
+\subsection{SIMD abstraction}
+\begin{frame}
+	\frametitle{Why is SIMD abstraction needed?}
+	
+	\begin{multicols}{2}
+	\begin{itemize}
+		\item x86 family
+		\begin{itemize}
+			\item MMX 64-bit float, double
+			\item SSE 128-bit float
+			\item SSE2 128-bit int8, int16, int32, int64, double
+			\item SSE3
+			\item SSSE3
+			\item SSE4a (AMD only)
+			\item SSE4.1
+			\item SSE4.2
+			\item AVX 256-bit float, double
+			\item FMA4 (AMD only)
+			\item XOP (AMD only)
+			\item FMA3
+		\end{itemize}
+		\columnbreak
+		\item PowerPC/VMX family
+		\begin{itemize}
+			\item AltiVec 128-bit int8, int16, int32, int64, float
+			\item Cell SPU 128-bit int8, int16, int32, int64, float, double
+		\end{itemize}
+		\item ARM family
+		\begin{itemize}
+			\item VFP 64-bit float, double
+			\item NEON 64-bit and 128-bit float, int8, int16, int32, int64
+		\end{itemize}
+		\vfill
+	\end{itemize}
+	\end{multicols}
+		
+\end{frame}
+
+\subsection{Explicit SIMD parallelization}
+\begin{frame}
+	\frametitle{Why not let the compiler do it?}
+	
+	\begin{itemize}
+		\item Compilers are only so smart
+		\item Automatic vectorization can only happen if:
+		\begin{itemize}
+			\item Memory is well agenced
+			\item Code is inherently vectorizable
+		\end{itemize}
+	\end{itemize}
+	
+	\begin{itemize}
+		\item Compilers don't always have enough static information to know what they can vectorize
+		\item Designing for vectorization is a human process
+	\end{itemize}
+	
+	Conclusion:
+	\begin{itemize}
+		\item Declaring SIMD parallelism explicitly is the best way
+              to ensure your code gets vectorized
+        \item To be demonstrated by this presentation
+    \end{itemize}
+
+\end{frame}
+
+\subsection{Getting Boost.SIMD}
+\begin{frame}
+	\frametitle{Where to get Boost.SIMD?}
+	
+	\begin{itemize}
+		\item No Boost.SIMD library yet
+		\item Spin-off of $NT^2$
+		\item Project of turning it into a Boost library ongoing\\
+		      GSoC project starting in July
+    \end{itemize}
+	\bigskip	
+	
+	Get $NT^2$ at \texttt{git://github.com/MetaScale/nt2.git}
+	
+\end{frame}
+
+\subsection{Set-up}
+\begin{frame}
+	\frametitle{How to compile the examples?}	
+	
+	Pre-requisites:
+	\begin{itemize}
+		\item Python 2.6+
+		\item CMake 2.6+
+		\item Git 1.6+
+		\item Boost 1.46+ or SVN trunk
+		\item $NT^2$ git master
+		\item Preferably a Linux/x86/GCC setup with GCC 4.6+
+	\end{itemize}
+	\bigskip
+	
+	\texttt{BOOST\_ROOT} must point to Boost\\
+	\texttt{NT2\_SOURCE\_ROOT} must point to $NT^2$
+	\bigskip
+	
+	Examples are at:\\
+	\texttt{git://github.com/MetaScale/boost-con-2011.git}
+	
+\end{frame}
+
+%\begin{frame}
+%  \frametitle{Outline}
+%\tableofcontents
+  % You might wish to add the option [pausesections]
+%\end{frame}
+
+\section{Interface}
+\subsection{Pack}
+
+\begin{frame}
+	\frametitle{Pack}
+	
+	\begin{tabular}{ll}
+	\lstinline{pack<T, N>} & SIMD register that packs \lstinline{N} elements of type \lstinline{T}\\
+	\lstinline{pack<T>} & automatically finds best \lstinline{N} available
+	\end{tabular}
+	\bigskip	
+	
+	\begin{quote} Behaves just like \lstinline{T} except operations yield a pack of \lstinline{T} and not a \lstinline{T}. \end{quote}
+	\bigskip	
+	
+	\lstinline{T} must be a fundamental arithmetic type, i.e. (\lstinline{un})\lstinline{signed char}, (\lstinline{unsigned}) \lstinline{short}, (\lstinline{unsigned}) \lstinline{int}, (\lstinline{unsigned}) \lstinline{long}, (\lstinline{unsigned}) \lstinline{long long}, \lstinline{float} or \lstinline{double} -- not \lstinline{bool}.
+	\bigskip
+	
+	\lstinline{N} must be a power of 2.
+	
+\end{frame}
+
+\begin{frame}
+	\frametitle{Element access}
+	
+	\begin{itemize}
+		\item like \lstinline{boost::array}, \lstinline{pack} is a random access read-only fusion sequence and range
+		\item \lstinline{at_c<i>(p)} or \lstinline{p[i]} can be used to access the i-th element, but is usually slow
+	\end{itemize}
+	
+\end{frame}
+
+\begin{frame}
+	\frametitle{Proto expressions}
+	
+	\begin{itemize}
+		\item All expressions, even those involving functions,
+		      generate template expressions that are evaluated on assignment
+		      or in the conversion operator
+		\item \lstinline{a * b + c} is mapped to \lstinline{fma(a, b, c)}\\
+		      \lstinline{a + b * c} is mapped to \lstinline{fma(b, c, a)}\\
+		      \lstinline{!(a < b)} is mapped to \lstinline{is_nle(a, b)}
+	\end{itemize}
+	
+\end{frame}
+
+\subsection{Native}
+\begin{frame}
+	\frametitle{Under the hood}
+	
+	\begin{tabular}{ll}
+	\lstinline{native<T, X>} & SIMD register for type \lstinline{T} on architecture \lstinline{X}
+	\end{tabular}
+	\bigskip
+	
+	\begin{itemize}
+		\item like \lstinline{pack} but Plain Old Data and all operations and functions return values and not
+		      expression templates.
+		\item \lstinline{X} characterizes the register type, not the instructions available. Only one tag for all
+		      SSE variants.
+		\item It is the interface that must be used to extend the library.
+	\end{itemize}
+	\bigskip
+	
+	\begin{tabular}{ll}
+	\lstinline{native<float, tag::sse_>} & wraps a \lstinline{__m128}\\
+	\lstinline{native<uint8_t, tag::sse_>} & wraps a \lstinline{__m128i}\\
+	\lstinline{native<double, tag::avx_>} & wraps a \lstinline{__m256d}\\
+	\lstinline{native<float, tag::altivec_>} & wraps a \lstinline{__vector float}
+	\end{tabular}
+	
+\end{frame}
+
+\begin{frame}
+	\frametitle{Software fallback}
+	
+	\begin{itemize}
+		\item \lstinline{tag::none_<N>} is a software-emulated SIMD architecture with a register size of \lstinline{N} bytes
+		\item It is used as fallback when no satisfying SIMD architecture is found
+		\item Thanks to this, code can degrade well and remain portable.
+	\end{itemize}
+	\bigskip	
+	
+	Default native type when no SIMD is found is\\
+	\hspace{10px}\lstinline{native<T, tag::none_<8> >}
+	
+\end{frame}
+
+\subsection{Primitives}
+
+\begin{frame}
+	\frametitle{Operators}
+	
+	\begin{itemize}
+		\item All overloadable operators are available
+		\item \lstinline{pack<T>} x \lstinline{pack<T>} operations but also \lstinline{pack<T>} x \lstinline{T}
+		\item All operators also exist as functions and PFOs
+		\item \lstinline{if_else} also available, but evaluation not lazy -- all branches get evaluated
+		\item Type coercion and promotion disabled\\
+		      \lstinline{uint8_t(255) + uint8_t(1)} yields \lstinline{uint8_t(0)}, not \lstinline{int(256)}
+	\end{itemize}	
+	
+\end{frame}
+
+\begin{frame}
+	\frametitle{Memory access}
+\end{frame}
+
+\begin{frame}
+	\frametitle{Extra arithmetic and bitwise operations, predicates}
+\end{frame}
+
+\begin{frame}
+	\frametitle{Reduction operations}
+\end{frame}
+
+\begin{frame}
+	\frametitle{SWAR operations}
+\end{frame}
+
+\section{Fast memcpy}
+
+\subsection{Naive memcpy}
+
+\begin{frame}
+\end{frame}
+
+\end{document}
