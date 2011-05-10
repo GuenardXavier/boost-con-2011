@@ -54,7 +54,9 @@ struct analytical_expression;
  * The analytical_domain inherits from proto::domain.
  ******************************************************************************/
 struct  analytical_domain
-      : boost::proto::domain< boost::proto::generator<analytical_expression> >
+      : boost::proto::domain< boost::proto::generator<analytical_expression>
+                            , analytical_function
+                            >
 {};
 
 /*******************************************************************************

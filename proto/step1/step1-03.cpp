@@ -140,7 +140,9 @@ template<typename AST>
 struct analytical_expression;
 
 struct  analytical_domain
-      : boost::proto::domain< boost::proto::generator<analytical_expression> >
+      : boost::proto::domain< boost::proto::generator<analytical_expression>
+                            , analytical_function
+                            >
 {};
 
 /*******************************************************************************
