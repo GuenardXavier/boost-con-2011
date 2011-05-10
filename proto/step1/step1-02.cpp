@@ -16,38 +16,58 @@
  * So far so good, we have now a new expression class controlled by our grammar.
  * Next step is to do actual *computations* with all of these
  ******************************************************************************/
-#include "grammar.hpp"
+
+/*******************************************************************************
+ * We'll first change the way we handle terminals. As we want now to handle
+ * variables and be able to manipulate their value, we change the definition of
+ * our terminals. We bring back a new grammar here and defines new terminals.
+ ******************************************************************************/
+
+/*
+ * TODO: Think of a way to represent the variable and how they'll be stored
+ * before evaluation. Copy and modify our grammar to reflect these choices.
+ */
 
 /*******************************************************************************
  * We now build a Transform.
- * A Transform is a Calalble Object defined in the very same way than a Proto
+ * A Transform is a Callable Object defined in the very same way than a Proto
  * grammar. Transform rules can be extended with a semantic action that will
  * describe what happens when a given rule is matched.
  *
  * Proto offers a lot of default transform, and we'll actually use them.
  *
  * So what happens when we encounter a node in our analytical function :
- *   - if it's a terminal, we want to extract the corresponding value
+ *   - if it's a terminal, we want to extarct the corresponding value
  *   - if it's an operator , we want it to do what the C++ operators does
  ******************************************************************************/
 
 /*******************************************************************************
- * We write our transform. To do so, we'll exploit proto default transforms
+ * To do so, we need to build small helping function object to handle the
+ * terminal cases. These functions will be defined as simple Callable
+ * Object following the result_of protocol. They will inherit from the
+ * boost::proto::callable class to tag them as being callable inside a transform
+ ******************************************************************************/
+
+/*******************************************************************************
+ * We pass variable as a boost::array and sue the terminal index to fetch it
+ ******************************************************************************/
+/*
+ * TODO: Write a small callable object returning the value of a variable in
+ * our expression
+ */
+
+/*******************************************************************************
+ * We write our transform. To do so, we'll exploit the default transform of
+ * proto and our newly written helper.
  * Note the use of proto::when that associates a rule to its action.
+ *
+ * Documentation on transform is available at:
+ * http://tinyurl.com/proto-transform
  ******************************************************************************/
 struct  evaluate_
-      : boost::proto::or_
-        <
-          boost::proto::when
-          < boost::proto::terminal< variable_tag >
-          , boost::proto::_state
-          >
-        , boost::proto::when
-          < boost::proto::terminal< boost::proto::_ >
-          , boost::proto::_value
-          >
-        , boost::proto::otherwise< boost::proto::_default<evaluate_> >
-        >
+/*
+ * TODO : Complete the transform definition
+ */
 {};
 
 /*******************************************************************************
@@ -87,15 +107,34 @@ struct  analytical_expression
 
   result_type operator()(double v0) const
   {
-    evaluate_ callee;
-    return callee(*this,v0);
+    /*
+     * TODO : Complete the oeprator implementation
+     */
+  }
+
+  result_type operator()(double v0,double v1) const
+  {
+    /*
+     * TODO : Complete the oeprator implementation
+     */
+  }
+
+  result_type operator()(double v0,double v1,double v2) const
+  {
+    /*
+     * TODO : Complete the oeprator implementation
+     */
   }
 };
 
 /*******************************************************************************
- * Last step, we have to redefine _x to be an analytical_expression
+ * Last step, we have to redefine _x to be an analytical_expression and we
+ * add its little brother _y and _z. Look at th euse of the MPL Integral
+ * to pass the variable index into the soon-to-be array.
  ******************************************************************************/
-analytical_expression< boost::proto::terminal< variable_tag >::type > const _x;
+analytical_expression< boost::proto::terminal< variable_tag<boost::mpl::int_<0> > >::type > const _x;
+analytical_expression< boost::proto::terminal< variable_tag<boost::mpl::int_<1> > >::type > const _y;
+analytical_expression< boost::proto::terminal< variable_tag<boost::mpl::int_<2> > >::type > const _z;
 
 /*******************************************************************************
  * Now test our analytical function computation systems
@@ -103,5 +142,7 @@ analytical_expression< boost::proto::terminal< variable_tag >::type > const _x;
 
 int main()
 {
-  std::cout << (_x*3 + 1./_x)(2) << "\n";
+  /*
+   * TODO : Test the computation
+   */
 }

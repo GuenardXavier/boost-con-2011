@@ -16,17 +16,7 @@
  * So far so good, we have now a new expression class controlled by our grammar.
  * Next step is to do actual *computations* with all of these
  ******************************************************************************/
-
-/*******************************************************************************
- * We'll first change the way we handle terminals. As we want now to handle
- * variables and be able to manipulate their value, we change the definition of
- * our terminals. We bring back a new grammar here and defines new terminals.
- ******************************************************************************/
-
-/*
- * TODO: Think of a way to represent the variable and how they'll be stored
- * before evaluation. Copy and modify our grammar to reflect these choices.
- */
+#include "grammar.hpp"
 
 /*******************************************************************************
  * We now build a Transform.
@@ -40,29 +30,6 @@
  *   - if it's a terminal, we want to extarct the corresponding value
  *   - if it's an operator , we want it to do what the C++ operators does
  ******************************************************************************/
-
-/*******************************************************************************
- * To do so, we need to build small helping function object to handle the
- * terminal cases. These functions will be defined as simple Callable
- * Object following the result_of protocol. They will inherit from the
- * boost::proto::callable class to tag them as being callable inside a transform
- ******************************************************************************/
-
-/*******************************************************************************
- * We pass constants directly and return them without much ado
- ******************************************************************************/
-/*
- * TODO: Write a small callable object returning the value of a constant in
- * our expression
- */
-
-/*******************************************************************************
- * We pass variable as a boost::array and sue the terminal index to fetch it
- ******************************************************************************/
-/*
- * TODO: Write a small callable object returning the value of a variable in
- * our expression
- */
 
 /*******************************************************************************
  * We write our transform. To do so, we'll exploit the default transform of
@@ -107,42 +74,23 @@ struct  analytical_expression
   BOOST_PROTO_EXTENDS_USING_ASSIGN(analytical_expression)
 
   /***************************************************************************
-   * Provides the 3 operator() overloads and amke it a Callable Object while
-   * we are at it. To do our bidding, we'll fill a proper boost::array and pass
-   * it to an instance of our transform.
+   * Provides the operator() overload and make it a Callable Object while
+   * we are at it.
    **************************************************************************/
   typedef double result_type;
 
   result_type operator()(double v0) const
   {
     /*
-     * TODO : Complete the oeprator implementation
-     */
-  }
-
-  result_type operator()(double v0,double v1) const
-  {
-    /*
-     * TODO : Complete the oeprator implementation
-     */
-  }
-
-  result_type operator()(double v0,double v1,double v2) const
-  {
-    /*
-     * TODO : Complete the oeprator implementation
+     * TODO : Complete the operator implementation
      */
   }
 };
 
 /*******************************************************************************
- * Last step, we have to redefine _x to be an analytical_expression and we
- * add its little brother _y and _z. Look at th euse of the MPL Integral
- * to pass the variable index into the soon-to-be array.
+ * Last step, we have to redefine _x to be an analytical_expression
  ******************************************************************************/
-analytical_expression< boost::proto::terminal< variable_tag<boost::mpl::int_<0> > >::type > const _x;
-analytical_expression< boost::proto::terminal< variable_tag<boost::mpl::int_<1> > >::type > const _y;
-analytical_expression< boost::proto::terminal< variable_tag<boost::mpl::int_<2> > >::type > const _z;
+analytical_expression< boost::proto::terminal< variable_tag >::type > const _x;
 
 /*******************************************************************************
  * Now test our analytical function computation systems
