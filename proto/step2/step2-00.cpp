@@ -31,9 +31,7 @@
  *  - Same question for partial derivatives ? What do we need ?
  *
  *  The following hour or so is here for you to think about these questions and
- *  try to answer them and implement something usign Proto. Don't worry, if
- *  you lay down everything elegantly, this is a mere 50 lines you'll need to
- *  write.
+ *  try to answer them and implement something usign Proto.
  *
  *  Don't forget to tests corner cases and see for yourself :)
  ******************************************************************************/
