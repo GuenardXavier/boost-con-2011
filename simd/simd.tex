@@ -105,8 +105,8 @@
 	\frametitle{Why is SIMD abstraction needed?}
 	
 	\begin{multicols}{2}
-	\begin{itemize}
-		\item x86 family
+	
+		x86 family
 		\begin{itemize}
 			\item MMX 64-bit float, double
 			\item SSE 128-bit float
@@ -122,18 +122,20 @@
 			\item FMA3
 		\end{itemize}
 		\columnbreak
-		\item PowerPC/VMX family
+		
+		PowerPC/VMX family
 		\begin{itemize}
 			\item AltiVec 128-bit int8, int16, int32, int64, float
 			\item Cell SPU 128-bit int8, int16, int32, int64, float, double
 		\end{itemize}
-		\item ARM family
+		
+		ARM family
 		\begin{itemize}
 			\item VFP 64-bit float, double
 			\item NEON 64-bit and 128-bit float, int8, int16, int32, int64
 		\end{itemize}
-		\vfill
-	\end{itemize}
+		
+	\vfill
 	\end{multicols}
 		
 \end{frame}
@@ -238,7 +240,7 @@
 	
 	\begin{itemize}
 		\item like \lstinline{boost::array}, \lstinline{pack} is a random access read-only fusion sequence and range
-		\item \lstinline{at_c<i>(p)} or \lstinline{p[i]} can be used to access the i-th element, but is usually slow
+		\item \lstinline{at\_c<i>(p)} or \lstinline{p[i]} can be used to access the i-th element, but is usually slow (\lstinline{at\_c} faster, can avoid going through memory)
 	\end{itemize}
 	
 \end{frame}
@@ -311,24 +313,103 @@
 		\item \lstinline{if_else} also available, but evaluation not lazy -- all branches get evaluated
 		\item Type coercion and promotion disabled\\
 		      \lstinline{uint8_t(255) + uint8_t(1)} yields \lstinline{uint8_t(0)}, not \lstinline{int(256)}
+		\item Comparison operators are lexicographic so as to yield booleans,
+		      use other functions if you want to do a memberwise comparison.
 	\end{itemize}	
 	
 \end{frame}
 
 \begin{frame}
 	\frametitle{Memory access}
+	
+	Memory must be aligned on \lstinline{sizeof(T)*N} to load/store a \lstinline{pack<T, N>}
+	from a \lstinline{T*}\\
+	-- except when it is statically known by how many elements it is not aligned.
+	
+	\begin{itemize}
+		\item \lstinline{load< pack<T, N> >(p, i)} loads pack at aligned address \lstinline{p + i*N}
+		\item \lstinline{load< pack<T, N>, Offset>(p, i)} loads pack at address \lstinline{p + i*N}, \lstinline{p + Offset} must be aligned
+		\item \lstinline{store(p, i, pk)} stores pack \lstinline{pk} at aligned address \lstinline{p + i*N}
+	\end{itemize}
 \end{frame}
 
 \begin{frame}
-	\frametitle{Extra arithmetic and bitwise operations, predicates}
+	\frametitle{Extra arithmetic, bitwise and ieee operations, predicates}
+	
+	\begin{multicols}{3}		
+	
+		Arithmetic
+		\begin{itemize}
+			\item saturated arithmetic
+			\item float/int conversion
+			\item round, floor, ceil, trunc
+			\item sqrt, hypot
+			\item average
+			\item random
+			\item min/max
+			\item rounded division and remainder
+		\end{itemize}
+
+		Bitwise
+		\begin{itemize}			
+			\item select
+			\item andnot, ornot
+			\item popcnt
+			\item ffs
+			\item ror, rol, rshr, rshl
+			\item twopower
+		\end{itemize}
+			
+		IEEE
+		\begin{itemize}
+			\item ilogb, frexp
+			\item ldexp
+			\item next/prev
+			\item ulpdist
+		\end{itemize}
+			
+		Predicates
+		\begin{itemize}
+			\item comparison with zero
+			\item negation of comparison
+			\item is\_unord, is\_nan, is\_invalid
+			\item is\_odd, is\_even
+			\item majority
+		\end{itemize}
+		
+		\vfill
+	
+	\end{multicols}
+	
 \end{frame}
 
 \begin{frame}
-	\frametitle{Reduction operations}
-\end{frame}
-
-\begin{frame}
-	\frametitle{SWAR operations}
+	\frametitle{Reduction and SWAR operations}
+	
+	\begin{multicols}{2}	
+	
+	Reduction
+	\begin{itemize}
+		\item any, all
+		\item nbtrue
+		\item hmsb
+		\item minimum/maximum, posmin/posmax
+		\item sum
+		\item product, dot product
+	\end{itemize}
+	\columnbreak	
+	
+	SWAR
+	\begin{itemize}
+		\item group/split
+		\item splatted reduction
+		\item cumsum
+		\item sort
+	\end{itemize}
+	
+	\vfill
+	\end{multicols}
+	
 \end{frame}
 
 \section{Fast memcpy}
