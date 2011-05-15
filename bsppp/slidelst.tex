@@ -107,7 +107,39 @@ inner_product( Range const& input )
 \end{lstlisting}}
 
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% BSP++ hybrid inner product
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\lstset{basicstyle=\tiny\ttfamily,frame=none,aboveskip=0bp,breaklines=true,belowskip=0bp,language=C++,showspaces=false, showstringspaces=false}\defverbatim[colored]\lstbsphybridinnerproduct{%
+\begin{lstlisting}
+template<class Range>
+typename iterator_value<typename Range::const_iterator>::type
+inner_product_omp( Range const& input )
+{
+  typedef typename
+          iterator_value<typename Range::const_iterator>::type value_type;
+  BSP_HYB_START(argc, argv)
+  {
+    par<Range> v = slice( input );
+    par< value_type > r;
+    *r = std::inner_product( v->begin(), v->end(), v->begin(), value_type() );
+     result_of::proj<value_type> exch = proj (r);
+    *r = std::accumulate(exch.begin(), exch.end() );
+  }
+}
 
+template<class Range>
+typename iterator_value<typename Range::const_iterator>::type
+inner_product( Range const& input )
+{
+  typedef typename
+          iterator_value<typename Range::const_iterator>::type value_type;
 
-
+  par<Range> v = slice( input );
+  par< value_type > r;
+  *r = inner_product_omp( v );
+  result_of::proj<value_type> exch = proj (r);
+  *r = std::accumulate(exch.begin(), exch.end() );
+}
+\end{lstlisting}}
 

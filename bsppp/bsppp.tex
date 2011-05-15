@@ -157,9 +157,44 @@
 {
   \frametitle{Support for Hybrid programming}
   \begin{block}{BSP++ Hybrid Inner Product}
-  %\lsthybridinnerprod
+  \lstbsphybridinnerproduct
   \end{block}{}
 }
 
+\frame
+{
+  \frametitle{The BSPGen Framework}
+  \begin{center}\pgfuseimage{framework}\end{center}
+}
+
+\frame
+{
+  \frametitle{Analysis and Exploration}
+  \begin{block}{Analysis}
+  \begin{itemize}
+   \footnotesize
+   \item Compile each sequential function using LLVM/Clang
+   \item Parse results to find out an estimation of runtime costs
+   \item Estimate communication from offline benchmarks
+  \end{itemize}
+  \end{block}{}
+
+  \begin{block}{Configuration exploration}
+  \begin{itemize}
+   \footnotesize
+   \item Buy a directed graph of the sequence of super-steps
+   \item Compute all combination of node/core configurations
+   \item Weights edge with estimated runtime cost 
+   \item Run a simple Shortest Path algorithm
+  \end{itemize}
+  \end{block}{}
+}
+\frame
+{
+  \frametitle{Analysis and Exploration}
+    \begin{block}{Configuration exploration}
+    \begin{center}\pgfuseimage{graph_inner_prod}\end{center}
+    \end{block}{}
+}
 
 
