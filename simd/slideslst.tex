@@ -1,0 +1,55 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Allcoator
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\lstset{basicstyle=\footnotesize\ttfamily,frame=none,aboveskip=0bp,breaklines=true,belowskip=0bp,language=C++,showspaces=false, showstringspaces=false}\defverbatim[colored]\lstallocator{%
+\begin{lstlisting}
+std::vector<float, simd::allocator<float> > v(173);
+
+assert( simd::is_aligned(&v[0]) );
+\end{lstlisting}}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% SIMD range interface
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\lstset{basicstyle=\footnotesize\ttfamily,frame=none,aboveskip=0bp,breaklines=true,belowskip=0bp,language=C++,showspaces=false, showstringspaces=false}\defverbatim[colored]\lststlrange{%
+\begin{lstlisting}
+std::vector<float, simd::allocator<float> > v(1024);
+pack<float> x,z;
+
+x = std::accumulate(simd::begin(v.begin()),simd::end(v.end()), z );
+\end{lstlisting}}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% SIMD range interface
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\lstset{basicstyle=\footnotesize\ttfamily,frame=none,aboveskip=0bp,breaklines=true,belowskip=0bp,language=C++,showspaces=false, showstringspaces=false}\defverbatim[colored]\lststlrangeb{%
+\begin{lstlisting}
+std::vector<float, simd::allocator<float> > v(1024);
+pack<float> x,z;
+
+x = boost::accumulate(simd::range(v.begin(),v.end()),z);
+\end{lstlisting}}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Native/pack range interface
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\lstset{basicstyle=\footnotesize\ttfamily,frame=none,aboveskip=0bp,breaklines=true,belowskip=0bp,language=C++,showspaces=false, showstringspaces=false}\defverbatim[colored]\lstpackrange{%
+\begin{lstlisting}
+pack<float> x(1,2,3,4);
+
+float k = std::accumulate(x.begin(),x.end(),0.f);
+\end{lstlisting}}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% SIMD range interface
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\lstset{basicstyle=\footnotesize\ttfamily,frame=none,aboveskip=0bp,breaklines=true,belowskip=0bp,language=C++,showspaces=false, showstringspaces=false}\defverbatim[colored]\lstranges{%
+\begin{lstlisting}
+std::vector<float, simd::allocator<float> > v(1024);
+pack<float> x,z;
+float r;
+
+x = boost::accumulate(simd::range(v.begin(),v.end()),z);
+r = std::accumulate(x.begin(),x.end(), 0.f );
+\end{lstlisting}}
