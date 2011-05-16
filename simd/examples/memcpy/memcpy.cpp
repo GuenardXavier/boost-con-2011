@@ -20,8 +20,15 @@ void* fast_memcpy_aligned(T* out, T const* in, std::size_t sz)
     static const std::size_t N = nt2::meta::native_cardinal<T>::value;
     
     NT2_ASSERT(is_aligned(sz*sizeof(T)) && is_aligned(in + Offset) && is_aligned(out));
-    for(std::size_t i=0; i != sz/N; ++i)
-        nt2::store(nt2::load<nt2::simd::pack<T>, Offset>(in, i), out, i);
+    
+    static const std::size_t unroll_size = 1;
+	std:size_t rem = (sz/N) % unroll_size;
+	std::size_t i = 0;
+	for(; i != rem; ++i)
+		nt2::store(nt2::load<nt2::simd::pack<T>, Offset>(in, i), out, i);
+    for(; i != sz/N; i += unroll_size)
+		for(std::size_t j=0; j != unroll_size; ++j)
+			nt2::store(nt2::load<nt2::simd::pack<T>, Offset>(in, i+j), out, i+j);
         
     return out;
 }
@@ -80,41 +87,15 @@ void* fast_memcpy(T* out, T const* in, std::size_t sz)
     return orig_out;
 }
 
-int main()
+extern "C"
 {
-    const std::size_t N = 1024*1024+42;
-    void* p1 = std::malloc(N + 100);
-    void* p2 = std::malloc(N + 100);
-    
-    char* buffer_in  = (char*)p1 + 11;
-    char* buffer_out = (char*)p2 + 5;
-    
-    for(std::size_t i=0; i!=N; ++i)
-        buffer_in[i] = char(i);
-    
-    nt2::ctic();
-    std::memcpy(buffer_out, buffer_in, N);
-    std::cout << "std::memcpy: " << (nt2::ctoc(false) / (N*1.)) << std::endl;
-    
-    for(std::size_t i=0; i!=N; ++i)
-    {
-        if(buffer_out[i] != char(i))
-        {
-            std::cout << "Invalid!" << std::endl;
-            break;
-        }
-    }
-    
-    nt2::ctic();
-    fast_memcpy(buffer_out, buffer_in, N);
-    std::cout << "fast_memcpy: " << (nt2::ctoc(false) / (N*1.)) << std::endl;
-    
-    for(std::size_t i=0; i!=N; ++i)
-    {
-        if(buffer_out[i] != char(i))
-        {
-            std::cout << "Invalid!" << std::endl;
-            break;
-        }
-    }
+	void* naive_memcpy(void* dest, void const* src, std::size_t sz)
+	{
+		return naive_memcpy((char*)dest, (char const*)src, sz);
+	}
+	
+	void* fast_memcpy(void* dest, void const* src, std::size_t sz)
+	{
+		return fast_memcpy((char*)dest, (char const*)src, sz);
+	}
 }
