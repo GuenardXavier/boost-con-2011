@@ -6,8 +6,8 @@
   \begin{block}{Where/How to store our data ?}
   \begin{itemize}
   \item SIMD operations require data to operate onto
-  \item Usual approach force a specific container type onto users
-  \item This is bad because it is overspecified
+  \item Usual approaches force a specific container type onto users
+  \item Not generic enough
   \end{itemize}
   \end{block}{}
 
@@ -54,8 +54,9 @@
 
   \begin{block}{Example}<2->
   \begin{center}
-  \only<2>{\lststlrange}
-  \only<3>{\lststlrangeb}
+  \only<2>{\pgfuseimage{simd-range}}
+  \only<3>{\lststlrange}
+  \only<4>{\lststlrangeb}
   \end{center}
   \end{block}
 }
@@ -81,21 +82,19 @@
 \frame
 {
   \frametitle{SIMD values as Range}
-  \begin{block}{Putting everythign together}
+  \begin{block}{Putting everything together}
   \begin{center}
   \lstranges
   \end{center}
   \end{block}{}
 }
 
-\subsection{SIMD Algorithms}
-
 \frame
 {
-
-}
-
-\frame
-{
-
+  \frametitle{SIMD values as Range}
+  \begin{block}{Putting everything together - Better version}
+  \begin{center}
+  \lstrangesb
+  \end{center}
+  \end{block}{}
 }

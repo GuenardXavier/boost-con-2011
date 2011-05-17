@@ -16,7 +16,10 @@ assert( simd::is_aligned(&v[0]) );
 std::vector<float, simd::allocator<float> > v(1024);
 pack<float> x,z;
 
-x = std::accumulate(simd::begin(v.begin()),simd::end(v.end()), z );
+x = std::accumulate( simd::begin(v.begin())
+                   , simd::end(v.end())
+                   , z 
+                   );
 \end{lstlisting}}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -27,7 +30,9 @@ x = std::accumulate(simd::begin(v.begin()),simd::end(v.end()), z );
 std::vector<float, simd::allocator<float> > v(1024);
 pack<float> x,z;
 
-x = boost::accumulate(simd::range(v.begin(),v.end()),z);
+x = boost::accumulate( simd::range(v.begin(),v.end())
+                     , z
+                     );
 \end{lstlisting}}
 
 
@@ -50,6 +55,24 @@ std::vector<float, simd::allocator<float> > v(1024);
 pack<float> x,z;
 float r;
 
-x = boost::accumulate(simd::range(v.begin(),v.end()),z);
+x = boost::accumulate( simd::range(v.begin(),v.end())
+                     , z
+                     );
 r = std::accumulate(x.begin(),x.end(), 0.f );
+\end{lstlisting}}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% SIMD range interface
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\lstset{basicstyle=\footnotesize\ttfamily,frame=none,aboveskip=0bp,breaklines=true,belowskip=0bp,language=C++,showspaces=false, showstringspaces=false}\defverbatim[colored]\lstrangesb{%
+\begin{lstlisting}
+std::vector<float, simd::allocator<float> > v(1024);
+float r;
+
+r = sum( boost::accumulate( simd::range(v.begin()
+                                       ,v.end()
+                                       )
+                          , zero_
+                          )
+       );
 \end{lstlisting}}
