@@ -224,10 +224,19 @@
 		\item \lstinline{if_else} also available, but evaluation not lazy -- all branches get evaluated
 		\item Type coercion and promotion disabled\\
 		      \lstinline{uint8_t(255) + uint8_t(1)} yields \lstinline{uint8_t(0)}, not \lstinline{int(256)}
-		\item Comparison operators are lexicographic so as to yield booleans,
-		      use other functions if you want to do a memberwise comparison.
 	\end{itemize}	
 	
+\end{frame}
+
+\begin{frame}
+	\frametitle{Comparisons}
+	
+	Comparison operators (\lstinline{==}, \lstinline{!=}, \lstinline{<}, \lstinline{<=}, \lstinline{>} and \lstinline{>=})
+	yield booleans in order to be compatible with the usual concepts.
+	\bigskip
+	
+	They perform lexical comparisons, for element-wise comparisons, use the following functions:\\
+	\lstinline{eq}, \lstinline{neq}, \lstinline{lt}, \lstinline{le}, \lstinline{gt} and \lstinline{ge}.
 \end{frame}
 
 \begin{frame}
