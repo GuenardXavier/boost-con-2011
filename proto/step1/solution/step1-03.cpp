@@ -124,12 +124,14 @@ struct  analytical_function
           >
         , cos_<analytical_function>
         , sin_<analytical_function>
-        , boost::proto::plus<analytical_function,analytical_function>
-        , boost::proto::negate<analytical_function>
-        , boost::proto::minus<analytical_function,analytical_function>
-        , boost::proto::multiplies<analytical_function,analytical_function>
-        , boost::proto::divides<analytical_function,analytical_function>
-        >
+				, boost::proto::or_
+					<	boost::proto::plus<analytical_function,analytical_function>
+					, boost::proto::negate<analytical_function>
+					, boost::proto::minus<analytical_function,analytical_function>
+					, boost::proto::multiplies<analytical_function,analytical_function>
+					, boost::proto::divides<analytical_function,analytical_function>
+					>
+				>
 {};
 
 /*******************************************************************************
