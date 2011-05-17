@@ -38,8 +38,6 @@
 \subject{Computer Science}
 
 \pgfdeclareimage[height=0.5cm]{university-logo}{logo}
-\pgfdeclareimage[height=3cm]{simd-range}{simd-range}
-
 \logo{\pgfuseimage{university-logo}}
 
 \begin{document}
@@ -250,7 +248,7 @@
 	\frametitle{Element access}
 	
 	\begin{itemize}
-		\item like \lstinline{boost::array}, \lstinline{pack} is both a random access fusion sequence and random access range, but read-only
+		\item like \lstinline{boost::array}, \lstinline{pack} is both a random access fusion sequence and a random access range, but read-only
 		\item \lstinline{at\_c<i>(p)} or \lstinline{p[i]} can be used to access the i-th element, but is usually slow (\lstinline{at\_c} is faster)
 	\end{itemize}
 	

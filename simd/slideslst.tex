@@ -30,9 +30,7 @@ x = std::accumulate( simd::begin(v.begin())
 std::vector<float, simd::allocator<float> > v(1024);
 pack<float> x,z;
 
-x = boost::accumulate( simd::range(v.begin(),v.end())
-                     , z
-                     );
+x = boost::accumulate(simd::range(v), z);
 \end{lstlisting}}
 
 
@@ -43,7 +41,7 @@ x = boost::accumulate( simd::range(v.begin(),v.end())
 \begin{lstlisting}
 pack<float> x(1,2,3,4);
 
-float k = std::accumulate(x.begin(),x.end(),0.f);
+float k = std::accumulate(x.begin(), x.end(), 0.f);
 \end{lstlisting}}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -55,10 +53,8 @@ std::vector<float, simd::allocator<float> > v(1024);
 pack<float> x,z;
 float r;
 
-x = boost::accumulate( simd::range(v.begin(),v.end())
-                     , z
-                     );
-r = std::accumulate(x.begin(),x.end(), 0.f );
+x = boost::accumulate(simd::range(v), z);
+r = std::accumulate(x.begin(), x.end(), 0.f);
 \end{lstlisting}}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -69,10 +65,5 @@ r = std::accumulate(x.begin(),x.end(), 0.f );
 std::vector<float, simd::allocator<float> > v(1024);
 float r;
 
-r = sum( boost::accumulate( simd::range(v.begin()
-                                       ,v.end()
-                                       )
-                          , zero_
-                          )
-       );
+r = sum( boost::accumulate( simd::range(v), pack<float>(0) ) );
 \end{lstlisting}}
