@@ -28,12 +28,16 @@
   \item MapReduce
   \end{itemize}
   \end{block}{}
+}
 
-  \begin{block}{Results}<2->
-   \only<2>{\begin{center}\pgfuseimage{mpi_omp_gmv}\end{center}}
-   \only<3>{\begin{center}\pgfuseimage{hybrid_gmv}\end{center}}
-   \only<4>{\begin{center}\pgfuseimage{mpi_omp_mapreduce}\end{center}}
-   \only<5>{\begin{center}\pgfuseimage{hybrid_mapreduce}\end{center}}
+\frame
+{
+  \frametitle{Simple Kernels}
+  \begin{block}{Results}
+   \only<1>{\begin{center}\pgfuseimage{mpi_omp_gmv}\end{center}}
+   \only<2>{\begin{center}\pgfuseimage{hybrid_gmv}\end{center}}
+   \only<3>{\begin{center}\pgfuseimage{mpi_omp_mapreduce}\end{center}}
+   \only<4>{\begin{center}\pgfuseimage{hybrid_mapreduce}\end{center}}
   \end{block}{}
 }
 
@@ -49,11 +53,15 @@
   \item Large problem, can be solved approximately (APMC)
   \end{itemize}
   \end{block}{}
+}
 
-  \begin{block}{Results}<2->
-   \only<2>{\begin{center}\pgfuseimage{philosophs}\end{center}}
-   \only<3>{\begin{center}\pgfuseimage{sensors}\end{center}}
-   \only<4>{
+\frame
+{
+  \frametitle{Model Checking}
+  \begin{block}{Results}
+   \only<1>{\begin{center}\pgfuseimage{philosophs}\end{center}}
+   \only<2>{\begin{center}\pgfuseimage{sensors}\end{center}}
+   \only<3>{
   \begin{itemize}
   \footnotesize
   \item Great scalability over more than 200 cores
