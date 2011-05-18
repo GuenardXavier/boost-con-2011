@@ -1,0 +1,659 @@
+\documentclass{beamer}
+\usetheme[pageofpages=of,% String used between the current page and the
+                         % total page count.
+          alternativetitlepage=true,% Use the fancy title page.
+          titlepagelogo=logo,% Logo for the first page.
+          ]{Torino}
+\usecolortheme{freewilly}
+\usepackage{listings}
+\usepackage[T1]{fontenc}
+\usepackage{inconsolata}
+\usepackage{graphics}
+\usepackage{color}
+\usepackage[utf8x]{inputenc}
+
+\lstset{language=c++,
+        numbers=left,
+        basicstyle=\footnotesize\ttfamily,
+        tabsize=2, 
+        numberstyle=\tiny,
+        showstringspaces=false,
+        frame=leftline,
+        columns=fullflexible,
+        keywordstyle=\color[rgb]{0.5,0.0,0},
+        identifierstyle=,
+        commentstyle=\color[rgb]{0.133,0.545,0.133},
+        stringstyle=\color[rgb]{0.627,0.126,0.941}     
+        }
+
+
+\title%[Short Paper Title] % (optional, use only with long paper titles)
+{Generic Conversion and Segmentation for Ranges}
+
+\subtitle
+{A Solution for Unicode}
+
+\author%[Author, Another] % (optional, use only with lots of authors)
+{Mathias Gaunard}
+% - Give the names in the same order as the appear in the paper.
+% - Use the \inst{?} command only if the authors have different
+%   affiliation.
+
+\institute[MetaScale] % (optional, but mostly needed)
+{MetaScale Inc.}
+% - Use the \inst command only if there are several affiliations.
+% - Keep it simple, no one is interested in your street address.
+
+\date%[CFP 2003] % (optional, should be abbreviation of conference name)
+{Boostcon 2011}
+
+\subject{Computer Science}
+
+%\pgfdeclareimage[height=0.5cm]{university-logo}{logo}
+%\logo{\pgfuseimage{university-logo}}
+
+
+
+% Delete this, if you do not want the table of contents to pop up at
+% the beginning of each subsection:
+%\AtBeginSubsection[]
+%{
+%  \begin{frame}<beamer>
+%    \frametitle{Outline}
+%    \tableofcontents[currentsection,currentsubsection]
+%  \end{frame}
+%}
+
+
+% If you wish to uncover everything in a step-wise fashion, uncomment
+% the following command: 
+
+%\beamerdefaultoverlayspecification{<+->}
+
+
+\begin{document}
+
+\begin{frame}
+\titlepage
+\end{frame}
+
+\section{Introduction}
+
+\subsection{Unicode}
+
+\begin{frame}
+	\frametitle{Context}
+	
+	\begin{itemize}
+		\item Google Summer of Code 2009
+		\item Available on the Boost Sandbox in SOC/2009
+		\item Doc at \lstinline{http://mathias.gaunard.com/unicode/doc/html}
+	\end{itemize}
+	\bigskip
+	
+	Should it be submitted for review? -- Feedback welcome
+\end{frame}
+
+\begin{frame}
+	\frametitle{What's Unicode?}
+
+	\begin{itemize}
+		\item A character set that unifies all character sets for all languages\\
+		      More than 1 million ``entries'', or \textbf{code points} (21-bit mapping)
+		\item A set of data attached to each code point
+		      \begin{itemize}
+		      	\item category info
+		      	\item possible decompositions
+		      	\item uppercase/lowercase/case-folded version
+		      \end{itemize}
+		\item A mechanism to combine code points to create \textbf{combining character sequences},
+		      and the associated algorithms to deal with them
+		\item Algorithms to delimit graphemes, words, sentences, possible line breaks
+		\item Collation algorithms for advanced comparison and sorting 
+	\end{itemize}
+
+\end{frame}
+
+\begin{frame}
+	\frametitle{UTF encodings}
+	
+	21-bit code points impractical, various encodings available:
+	
+	\begin{itemize}
+		\item UTF-8, encode a code point as a variable-sized sequence of 1 to 4 8-bit code units -- also has lots of nice properties
+		\item UTF-16, encode a code point as one or two 16-bit code units
+		\item UTF-32, enode a code point as a single 32-bit code unit
+	\end{itemize}
+	\bigskip
+	
+	Variable-width radically different from legacy character sets.
+	
+\end{frame}
+
+\begin{frame}
+	\frametitle{Combining character sequences}
+	
+	\begin{itemize}
+		\item Any number of combining code points can be appended after a non-combining code point\\
+		      Forms a single combining character sequence
+		\item No hard limit on the number of combinations, some exist as precomposed code points, some do not (e.g. some Navajo characters)
+		\item The same combining character sequence can have lots of different representations
+	\end{itemize}
+	
+	\begin{itemize}
+		\item Canonical ordering of combining code points
+		\item Normalization: fully decomposed, fully decomposed (NFD) then recomposed (NFC)
+	\end{itemize}
+	
+\end{frame}
+
+\begin{frame}
+	\frametitle{Example}
+	
+	The \includegraphics[scale=0.07]{1EC7.png} character can be represented in several ways:
+	
+	\bigskip
+	\small{
+	\begin{tabular}{ll}
+	U+1ec7 & e with circumflex and dot below\\
+	U+1eb9 U+0302 & e with dot below + combining circumflex\\ 
+	U+0065 U+0323 U+0302 & e + combining dot below + combining circumflex
+	\end{tabular} }
+	\bigskip
+	
+	U+0065 U+0302 U+0323 also canonically equivalent, but not canonically ordered.
+	\bigskip
+\end{frame}
+
+\begin{frame}
+	\frametitle{What's a character?}
+	
+	Different approximations:
+	\begin{itemize}
+		\item Code unit
+		\item Code point
+		\item Combining character sequence
+		\item Grapheme cluster
+	\end{itemize}
+	\bigskip
+	
+	Grapheme cluster \textit{real} character for the end-user, but not necessarily for the programmer.\\
+	Some combining character sequences aren't graphemes and some graphemes aren't combining character sequences -- different notions.
+	
+\end{frame}
+
+\begin{frame}
+	\frametitle{How does Unicode translate into a library?}
+	
+	A table of properties for each code point:
+	\begin{itemize}
+		\item Fairly large data, needs to remove redundancy
+		\item May need to be tailored for particular locales
+		\item A dynamically-linked library with a stable and simple ABI makes sense
+		\item Database needs to be at least backward-compatible
+	\end{itemize}
+	\bigskip
+	
+	Low-level interface, not what we want to provide to the user, but still needs to be there.
+\end{frame}
+
+\begin{frame}
+	\frametitle{Unicode Character Database}
+	
+	Boost.Unicode generates one:
+	\begin{itemize}
+		\item Spirit Classic parser
+		\item Two-level memory structure, but redundancy removal not done on a per-property basis
+		\item A function per property that returns that property value for a code point
+		\item Backward compatible but also forward compatible by using functions on the caller side that checks
+		      whether the property value is in a known range
+		\item Composition needs prefix (and possibly suffix) trees, needs to come up with a better ABI to expose these
+	\end{itemize}
+	
+\end{frame}
+
+\begin{frame}
+	\frametitle{What we need}
+	
+	\begin{columns}[t]
+	
+	\column{.5\textwidth}
+	
+	\begin{itemize}
+	
+	\item Conversion/transformation
+	\begin{itemize}
+		\item UTF decoding/encoding
+		\item Normalization, decomposition, composition
+		\item Case folding
+	\end{itemize}
+	
+	\item Concatenation of normalized strings (normalization not stable by concatenation)	
+	
+	\end{itemize}
+	\column{.5\textwidth}	
+	
+	\begin{itemize}
+	\item Segmentation, for any UTF-X range:
+	\begin{itemize}
+		\item Code points
+		\item Combining character sequences
+		\item Graphemes, words, etc.
+	\end{itemize}	
+	
+	\item Find closest boundaries from a random position (related to segmentation)
+	\item Substring search and match
+	
+	\end{itemize}
+	
+	\end{columns}
+		
+\end{frame}
+
+\begin{frame}
+	\frametitle{Operations on text}
+	
+	Yet another huge monolithic inflexible string type with member functions that do everything,
+	including what you may not want or need?
+	\bigskip
+	
+	No, we want:
+	\begin{itemize}
+		\item To be able to work with any string type, wherever/however it is stored
+		\item To control what memory is allocated, when and how -- even be able to avoid allocating freestore memory entirely if possible
+		\item To be able to combine transformations easily and efficiently
+		\item For conversions to be \textit{fast}
+		\item It to be as easy to use and unintrusive as possible
+	\end{itemize}
+
+\end{frame}
+
+\begin{frame}
+	\frametitle{The Solution}
+	
+	\begin{itemize}
+		\item Works with any range
+		\item A conversion \textbf{only needs to be written once} and with a \textbf{very simple interface} to be used in different ways
+		\item Conversions can be combined, applied eagerly or lazily
+		\item Can exploit parallelism
+	\end{itemize}
+	
+\end{frame}
+
+\begin{frame}[fragile]
+	\frametitle{The Range concept}
+	
+	\begin{quote}
+	A range is a type from which you can extract a begin and a past-the-end iterator
+	\end{quote}	
+	
+	\begin{itemize}
+		\item Concept is refined just like the Iterator concepts
+		\item Containers are ranges, \lstinline{std::pair<It, It>} too
+		\item Terser syntax than iterators, can be used with \lstinline{BOOST_FOREACH} or C++0x range for-loop
+		\item Boost.Range provides the basis of range primitives, as well as pretty cool range adaptors
+	\end{itemize}
+
+\end{frame}
+
+\begin{frame}[fragile]
+	\frametitle{Boost.Range adaptors}
+	
+	\begin{lstlisting}
+	std::vector<int> v = {1, 2, 3, 4};
+	transformed_range<
+	    F,
+	    filtered_range<
+	        P,
+	        iterator_range< std::vector<int>::iterator >
+	    >
+	> adapted = r | filtered(p) | transformed(f);
+	\end{lstlisting}
+	\bigskip
+	
+	Returns a range \lstinline{adapted} that will, as you iterate it, iterate through the elements of the vector \lstinline{v}, discard elements that do not satisfy the predicate \lstinline{p} and apply the function \lstinline{f} on each element.
+	
+\end{frame}
+
+\begin{frame}
+	\frametitle{Unicode adaptors}
+	
+	Like with DSELs, return type is complex, avoid writing it out.
+	\begin{itemize}
+		\item Use auto
+		\item Don't name the variable
+	\end{itemize}
+	\bigskip
+	
+	We're going to try to define a mechanism that allows things like encoding conversion or even more complicated operations to be expressed lazily in a similar way.
+	
+\end{frame}
+
+\begin{frame}[fragile]
+	\frametitle{Converter concept}
+	
+	\begin{lstlisting}
+	struct Converter
+	{
+	    typedef unspecified input_type; // archetype for concept-checking
+	    typedef unspecified output_type;
+	    typedef mpl_integral_constant max_output; // optional
+	    typedef mpl_integral_constant output_alignment; // optional
+	
+	    template<typename In, typename Out>
+	    Out ltr(In& begin, In const& end, Out const& out);
+	
+	    template<typename In, typename Out>
+	    Out rtl(In const& begin, In& end, Out const& out);		
+	};
+	\end{lstlisting}
+	
+	\small{
+	\begin{itemize}
+	\item Defines a \textbf{step} of a conversion that advances \lstinline{begin} or \lstinline{end}
+	depending on whether you iterate left-to-right or right-to-left respectively.
+	
+	\item ``Consumes'' some elements from the \lstinline{In} range and writes some new ones to \lstinline{Out},
+	writing up to \lstinline{max_output} elements in a single step.
+	\end{itemize} }
+	
+\end{frame}
+
+\begin{frame}[fragile]
+	\frametitle{How to use a converter}
+	
+	\begin{itemize}
+	\item Eager evaluation:
+	\begin{lstlisting}
+	std::string utf8_data = "Hello World";
+	
+	std::basic_string<char32> utf32_data;
+	convert(utf8_data, u8_decoder(), std::back_inserter(utf32_data));
+	
+	BOOST_FOREACH(char32 cp, utf32_data)
+	    std::cout << "Code point " << cp << "\n";
+	\end{lstlisting}
+	
+	\item Lazy evaluation:
+	\begin{lstlisting}
+	std::string utf8_data = "Hello World";
+	
+	BOOST_FOREACH(char32 cp, adaptors::convert(string, u8_decoder()))
+	    std::cout << "Code point " << cp << "\n";
+	\end{lstlisting}
+	\end{itemize}
+	
+\end{frame}
+
+\begin{frame}[fragile]
+	\frametitle{Two-pass eager evaluation}
+	
+	Don't have to use \lstinline{push_back}, can compute the size that you need,
+	allocate the buffer, and convert it there.
+	\bigskip
+	
+	\begin{lstlisting}
+	counting_iterator<size_t> it = convert(
+	    utf8_data,
+	    u8_decoder(),
+	    counting_iterator<size_t>(0)
+	);
+	
+	std::vector<char32> utf32_data(it.base());
+	convert(utf8_data, u8_decoder(), utf32_data.begin());
+	\end{lstlisting}
+	
+\end{frame}
+
+\begin{frame}[fragile]
+	\frametitle{Segmenter concept}
+	
+	\begin{lstlisting}
+	struct Segmenter
+	{
+	    typedef unspecified input_type; // archetype for concept-checking
+	    typedef unspecified tag_type; // optional
+	
+	    template<typename In>
+	    tag_type ltr(In& begin, In const& end);
+	
+	    template<typename In>
+	    tag_type rtl(In const& begin, In& end);		
+	};
+	\end{lstlisting}
+	
+	Like a \lstinline{Converter}, but no output and potentially a tag.
+\end{frame}
+
+\begin{frame}[fragile]
+	\frametitle{How to use a segmenter}
+	
+	\begin{lstlisting}
+	std::string utf8_data = "Hello World";
+	
+	typedef iterator_range<std::string::iterator> sub_range;
+	BOOST_FOREACH(sub_range cp, segment(utf8_data, u8_segmenter()))
+	{
+	    std::cout << "Code point "; 
+	    BOOST_FOREACH(char c, cp)
+	        std::cout << (int)c << ", ";
+	    std::cout << "\n";
+	} 
+	\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]
+	\frametitle{BoundaryChecker concept}
+	
+	\begin{lstlisting}
+	struct BoundaryChecker
+	{
+	    typedef unspecified input_type; // archetype for concept-checking
+	
+	    template<typename In>
+	    bool operator()(In const& begin, In const& end, In const& pos);
+	}
+	\end{lstlisting}
+	
+	Returns whether the position \lstinline{pos} within the range [\lstinline{begin}, \lstinline{end}[ lies
+	on a particular boundary.
+	
+\end{frame}
+
+\begin{frame}
+	\frametitle{Building boundary checkers and segmenters}
+	
+	\begin{itemize}
+		\item \lstinline{multi_boundary}: builds a \lstinline{BoundaryChecker} that tests for a boundary, applies a converter, then checks for another boundary.
+		\item \lstinline{converter_segmenter}: builds a \lstinline{Segmenter} from a \lstinline{Converter} by discarding its input
+		\item \lstinline{boundary_segmenter}: builds a \lstinline{Segmenter} from a \lstinline{BoundaryChecker} by advancing until the boundary
+		\item \lstinline{converted_segmenter}: builds a \lstinline{Segmenter} that applies a converter before applying a segmenter -- converter must have a max output of 1.
+	\end{itemize}
+	
+\end{frame}
+
+\begin{frame}
+	\frametitle{Building converters}
+	
+	\begin{itemize}
+		\item \lstinline{multi_converter}: builds a \lstinline{Converter} that applies a converter after another, step output of first must combine well with expected input of second converter
+		\item \lstinline{converted_converter}: builds a \lstinline{Converter} that applies a converter after another -- first converter must have a max output of 1.
+		\item \lstinline{codecvt_in_converter} and \lstinline{codecvt_out_converter}: builds a \lstinline{Converter} from one direction of a codecvt facet
+	\end{itemize}
+	
+\end{frame}
+
+\begin{frame}
+	\frametitle{Converters and segmenters usage}
+	
+	\begin{itemize}
+		\item Can generate a codecvt facet from two converters and two boundary checkers for transparent conversion on std::fstream -- slow, don't use it unless you love standard iostreams
+		\item Can build an iterator adaptor that applies the converter step by step -- lazy, removes buffering and memory allocation problems
+		\item Can evaluate them in a tight loop -- fastest
+	\end{itemize}
+	
+\end{frame}
+
+\begin{frame}
+	\frametitle{Unicode converters and segmenters}
+	
+	Basic primitives:
+	\begin{itemize}
+		\item \lstinline{cast_converter}
+		\item \lstinline{u8_decoder}, \lstinline{u8_encoder}, \lstinline{u8_boundary}, equivalent \lstinline{u16_*} ones
+		\item \lstinline{locale_utf_transcoder}, \lstinline{utf_locale_transcoder} -- built from codecvt facets
+		\item \lstinline{combining_boundary}
+		\item \lstinline{grapheme_boundary}
+		\item \lstinline{decomposer} and \lstinline{composer}
+	\end{itemize}
+	
+\end{frame}
+
+\begin{frame}
+	\frametitle{Transcoding}
+	
+	\begin{itemize}
+	\item Convenience UTF transcoding converters:
+	\begin{itemize}
+		\item \lstinline{utf_decoder} -- calls the correct one depending on the size of the elements
+		\item \lstinline{utf_encoder<T>} -- calls the correct one depending on the size of T
+		\item \lstinline{utf_transcoder<T>} -- calls \lstinline{utf_decoder} then \lstinline{utf_encoder<T>}
+	\end{itemize}
+	
+	\item Conversion with other character sets:
+	\begin{itemize}
+		\item \lstinline{latin1_encoder}
+		\item \lstinline{locale_decoder}, \lstinline{locale_encoder}
+	\end{itemize}
+	
+	\item Normalization
+	\begin{itemize}
+		\item \lstinline{normalizer}
+	\end{itemize}
+	
+	\end{itemize}
+	
+\end{frame}
+
+\begin{frame}
+	\frametitle{UTF variants}
+	
+	\begin{itemize}
+		\item \lstinline{u8_segment} and \lstinline{u16_segment} -- UTF segmenters, two possible implementations
+		\item \lstinline{u8_combining_boundary}, \lstinline{u8_grapheme_boundary}, etc.
+		\item \lstinline{u8_combining_segment}, \lstinline{u8_grapheme_segment}, etc.
+		\item \lstinline{u8_normalizer} etc.
+	\end{itemize}
+	
+\end{frame}
+
+\begin{frame}
+	\frametitle{String search and match}
+	
+	Two solutions:
+	\begin{itemize}
+		\item Adapt the range as a range of what you want to match on and pass that to a generic
+		      search algorithm
+		\item Tries to match the range as-is but discard matches that do not lie on the expected boundaries
+	\end{itemize}
+	
+	Second solution is typically faster, but needs some wrappers for the search algorithms.
+	
+\end{frame}
+	
+\begin{frame}[fragile]
+	\frametitle{String search example}
+	
+	\begin{lstlisting}
+	std::string input = "foo\xcc\x82foo";
+	std::string search = "foo";
+
+	// Adapted ranges
+	auto match
+	  = algorithm::find_first( adaptors::u8_grapheme_segment(input),
+	                              adaptors::u8_grapheme_segment(search)
+	                            );
+    \end{lstlisting}
+	
+\end{frame}
+
+\begin{frame}[fragile]
+	\frametitle{String search example with boundary check}
+
+	Boost.Unicode provides adapters for models of the Boost.StringAlgo \lstinline{Finder} concept in order to filter matches that do not satisfy a particular \lstinline{BoundaryChecker}.
+	\bigskip
+
+	\begin{lstlisting}
+	// Boundary check
+	auto finder = make_boundary_finder( algorithm::first_finder(search),
+	                                        u8_grapheme_boundary()
+	                                      );
+	iterator_range<std::string::iterator> match
+	  = algorithm::find(input, finder);
+	\end{lstlisting}
+
+\end{frame}
+
+\begin{frame}[fragile]
+	\frametitle{UTF-8 decoding}
+	
+	\begin{lstlisting}
+	unsigned char b0 = *(begin++);
+	if((b0 & 0x80) == 0)
+	    return char32(b0);
+        
+	unsigned char b1 = *(begin++);
+	if((b0 & 0xe0) == 0xc0)
+	    return (char32(b1) & 0x3f) | ((char32(b0) & 0x1f) << 6);
+        
+	unsigned char b2 = *(begin++);
+	if((b0 & 0xf0) == 0xe0)
+	    return (char32(b2) & 0x3f) | ((char32(b1) & 0x3f) << 6)
+	         | ((char32(b0) & 0x0f) << 12);
+
+	unsigned char b3 = *(begin++);
+	if((b0 & 0xf8) == 0xf0)
+	    return (char32(b3) & 0x3f) | ((char32(b2) & 0x3f) << 6)
+	         | ((char32(b1) & 0x3f) << 12) | ((char32(b0) & 0x07) << 18);
+	\end{lstlisting}
+\end{frame}
+
+\begin{frame}
+	\frametitle{Vectorized UTF-8 decoding}
+
+	Is UTF-8 decoding vectorizable?
+	\begin{itemize}
+		\item Promotion from uint8 to uint32
+		\item Branching
+		\item Data to consume per step is variable-width and interleaved
+	\end{itemize}
+	\bigskip
+	
+	Not easy to vectorize, and won't necessarily be fast.
+	\bigskip
+	
+	Could have a \lstinline{u8_fast_decoder} that outputs 4 code points aligned on a 16 boundary in one step; or less if not enough data.
+\end{frame}
+
+\begin{frame}[fragile]
+	\frametitle{UTF-8 decoding with SIMD -- Teaser}
+
+\begin{lstlisting}
+return select( is_eqz(b0 & 0x80),
+                 b0,
+                 select( eq(b0 & 0xe0, 0xc0),
+                          (b1 & 0x3f) | (b0 & 0x1f) << 6,
+                         select( eq(b0 & 0xf0, 0xe0),
+                                  (b2 & 0x3f) | ((b1 & 0x3f) << 6)
+                                | ((b0 & 0x0f) << 12),
+                                  (b3 & 0x3f) | ((b2 & 0x3f) << 6)
+                                | ((b1 & 0x3f) << 12) | ((b0 & 0x07) << 18)
+                                )
+                        )
+              )
+;
+\end{lstlisting}
+
+\end{frame}
+
+\end{document}
