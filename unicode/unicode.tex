@@ -77,10 +77,6 @@
 \titlepage
 \end{frame}
 
-\section{Introduction}
-
-\subsection{Unicode}
-
 \begin{frame}
 	\frametitle{Context}
 	
@@ -142,7 +138,7 @@
 	
 	\begin{itemize}
 		\item Canonical ordering of combining code points
-		\item Normalization: fully decomposed, fully decomposed (NFD) then recomposed (NFC)
+		\item Normalization: fully decomposed (NFD), fully decomposed then recomposed (NFC)
 	\end{itemize}
 	
 \end{frame}
@@ -307,7 +303,7 @@
 	        P,
 	        iterator_range< std::vector<int>::iterator >
 	    >
-	> adapted = r | filtered(p) | transformed(f);
+	> adapted = v | filtered(p) | transformed(f);
 	\end{lstlisting}
 	\bigskip
 	
@@ -378,7 +374,7 @@
 	\begin{lstlisting}
 	std::string utf8_data = "Hello World";
 	
-	BOOST_FOREACH(char32 cp, adaptors::convert(string, u8_decoder()))
+	BOOST_FOREACH(char32 cp, adaptors::convert(utf8_data, u8_decoder()))
 	    std::cout << "Code point " << cp << "\n";
 	\end{lstlisting}
 	\end{itemize}
@@ -465,7 +461,7 @@
 	
 	\begin{itemize}
 		\item \lstinline{multi_boundary}: builds a \lstinline{BoundaryChecker} that tests for a boundary, applies a converter, then checks for another boundary.
-		\item \lstinline{converter_segmenter}: builds a \lstinline{Segmenter} from a \lstinline{Converter} by discarding its input
+		\item \lstinline{converter_segmenter}: builds a \lstinline{Segmenter} from a \lstinline{Converter} by discarding its output
 		\item \lstinline{boundary_segmenter}: builds a \lstinline{Segmenter} from a \lstinline{BoundaryChecker} by advancing until the boundary
 		\item \lstinline{converted_segmenter}: builds a \lstinline{Segmenter} that applies a converter before applying a segmenter -- converter must have a max output of 1.
 	\end{itemize}
