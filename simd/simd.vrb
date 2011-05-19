@@ -1,0 +1,20 @@
+\frametitle {SIMD version}
+
+\begin{lstlisting}
+static const std::size_t N = meta::cardinal_of< pack<float> >::value;
+for(std::size_t i = 0; i != height*width/N; i += 4)
+{
+    pack<float> rgba1 = load< pack<float> >(image, i);
+    pack<float> rgba2 = load< pack<float> >(image, i+1);
+    pack<float> rgba3 = load< pack<float> >(image, i+2);
+    pack<float> rgba4 = load< pack<float> >(image, i+3);
+
+    _MM_TRANSPOSE4_PS(rgba1, rgba2, rgba3, rgba4);
+
+    pack<float> res1 = 0.3f * rgba1 + 0.59 * rgba2 + 0.11 * rgba3;
+    store(res, result, i/4);
+}
+\end{lstlisting}
+\bigskip
+
+\lstinline{transpose} is \textbf{not} mapped in Boost.SIMD because it's just \textit{wrong}

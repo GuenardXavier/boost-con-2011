@@ -98,3 +98,54 @@
   \end{center}
   \end{block}{}
 }
+
+\frame
+{
+  \frametitle{SIMD values as Range}
+  \begin{block}{\texttt{std::accumulate} speed-up for \texttt{double}}
+  \begin{center}
+  \pgfuseimage{accu-double}
+  \end{center}
+  \end{block}{}
+}
+
+
+\frame
+{
+  \frametitle{SIMD values as Range}
+  \begin{block}{\texttt{std::accumulate} speed-up for \texttt{float}}
+  \begin{center}
+  \pgfuseimage{accu-float}
+  \end{center}
+  \end{block}{}
+}
+
+\frame
+{
+  \frametitle{SIMD Range and generic SIMD/scalar code}
+  \begin{block}{Back to RGB2Grey}
+  \begin{center}
+  \lstrangergb
+  \end{center}
+  \end{block}{}
+}
+
+\frame
+{
+  \frametitle{What's Missing ?}
+  \begin{block}{Integrated SIMD support}
+  \begin{itemize}\footnotesize
+  \item Most STD algorithms should be specialized to be run in one scoop
+  \item Can we have a Boost.Range adaptor like \texttt{simd(r)} ?
+  \item Support for shifted Range using \texttt{load<T,N>}
+  \end{itemize}
+  \end{block}{}
+
+  \begin{block}{Some SIMD mind teasers}
+  \begin{itemize}\footnotesize
+  \item SIMD \texttt{find} ? 
+  \item SIMD \texttt{sort} ? 
+  \item Accelerating stuff like \texttt{copy} ?
+  \end{itemize}
+  \end{block}{}
+}

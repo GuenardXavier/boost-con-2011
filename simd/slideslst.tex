@@ -1,4 +1,23 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% SSE2/Altivec
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\lstset{basicstyle=\footnotesize\ttfamily,frame=none,aboveskip=0bp,breaklines=true,belowskip=0bp,language=C++,showspaces=false, showstringspaces=false}\defverbatim[colored]\lstsse{%
+\begin{lstlisting}
+__m128i a, b, c, result;
+result = _mm_mul_epi32(a, _mm_add_epi32(b, c));
+\end{lstlisting}}
+
+\lstset{basicstyle=\footnotesize\ttfamily,frame=none,aboveskip=0bp,breaklines=true,belowskip=0bp,language=C++,showspaces=false, showstringspaces=false}\defverbatim[colored]\lstvmx{%
+\begin{lstlisting}
+__vector int a, b, c, result;
+	result = vec_cti(vec_madd(vec_ctf(a,0)
+                         , vec_ctf(b,0)
+                         , vec_ctf(c,0)
+                         )
+                 ,0);
+\end{lstlisting}}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Allcoator
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \lstset{basicstyle=\footnotesize\ttfamily,frame=none,aboveskip=0bp,breaklines=true,belowskip=0bp,language=C++,showspaces=false, showstringspaces=false}\defverbatim[colored]\lstallocator{%
@@ -65,5 +84,81 @@ r = std::accumulate(x.begin(), x.end(), 0.f);
 std::vector<float, simd::allocator<float> > v(1024);
 float r;
 
-r = sum( boost::accumulate( simd::range(v), pack<float>(0) ) );
+r = sum(accumulate(simd::range(v),pack<float>()));
+\end{lstlisting}}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% SIMD range interface
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\lstset{basicstyle=\tiny\ttfamily,frame=none,aboveskip=0bp,breaklines=true,belowskip=0bp,language=C++,showspaces=false, showstringspaces=false}\defverbatim[colored]\lstrangergb{%
+\begin{lstlisting}
+template<class RangeIn, class RangeOut> inline void
+rgb2grey( RangeIn result, RangeOut red, RangeOut green, RangeOut blue )
+{
+  typedef typename RangeIn::iterator  in_iterator;
+  typedef typename RangeOut::iterator iterator;
+  typedef typename iterator_value<iterator>::type type;
+
+  iterator br = result.begin(), er = result.end();
+  in_iterator r = red.begin();
+  in_iterator g = green.begin();
+  in_iterator b = blue.begin();
+
+  while( br != er )
+  {
+    type rv = load< type >(r, 0);
+    type gv = load< type >(g, 0);
+    type bv = load< type >(b, 0);
+    type res = 0.3f * rv + 0.59f * gv + 0.11f * bv;
+    store(res, br, 0);
+    br++; r++; g++; b++;
+  }
+}
+\end{lstlisting}}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% SIMD bool
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\lstset{basicstyle=\footnotesize\ttfamily,frame=none,aboveskip=0bp,breaklines=true,belowskip=0bp,language=C++,showspaces=false, showstringspaces=false}\defverbatim[colored]\lstsimdbool{%
+\begin{lstlisting}
+pack<float> x(1,2,3,4);
+pack<float> c(2.5);
+
+cout << lt(x,c) << endl;
+\end{lstlisting}}
+
+\lstset{basicstyle=\footnotesize\ttfamily,frame=none,aboveskip=0bp,breaklines=true,belowskip=0bp,language=C++,showspaces=false, showstringspaces=false}\defverbatim[colored]\lstsimdboolresult{%
+\begin{lstlisting}
+(( Nan Nan 0  0))
+\end{lstlisting}}
+
+\lstset{basicstyle=\footnotesize\ttfamily,frame=none,aboveskip=0bp,breaklines=true,belowskip=0bp,language=C++,showspaces=false, showstringspaces=false}\defverbatim[colored]\lstsimdboolvalue{%
+\begin{lstlisting}
+True<T>() which returns a proper true value w/r to T
+False<T>() which returns a proper true value w/r to T
+\end{lstlisting}}
+
+\lstset{basicstyle=\footnotesize\ttfamily,frame=none,aboveskip=0bp,breaklines=true,belowskip=0bp,language=C++,showspaces=false, showstringspaces=false}\defverbatim[colored]\lstsimdwhere{%
+\begin{lstlisting}
+// Scalar code
+if( x > 4 )
+  y = 2*x;
+else
+  z = 1.f/x
+
+// SIMD code
+// ???
+\end{lstlisting}}
+
+\lstset{basicstyle=\footnotesize\ttfamily,frame=none,aboveskip=0bp,breaklines=true,belowskip=0bp,language=C++,showspaces=false, showstringspaces=false}\defverbatim[colored]\lstsimdwheredone{%
+\begin{lstlisting}
+// Scalar code
+if( x > 4 )
+  y = 2*x;
+else
+  z = 1.f/x
+
+// SIMD code
+y = where( x > 4, 2*x, y);
+z = where( x > 4, z, 1.f/x);
 \end{lstlisting}}
