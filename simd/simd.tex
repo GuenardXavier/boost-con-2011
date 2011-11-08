@@ -33,7 +33,7 @@
 \title{Practical SIMD acceleration with Boost.SIMD}
 
 \author{Mathias Gaunard \and Joël Falcou \and Jean-Thierry Lapresté}
-\institute[MetaScale]{MetaScale Inc.}
+\institute[MetaScale]{MetaScale}
 \date[BOOST 2011]{Boostcon 2011}
 \subject{Computer Science}
 
@@ -44,6 +44,11 @@
 \pgfdeclareimage[height=5cm]{simd-schema}{simd-schema}
 \pgfdeclareimage[height=5cm]{accu-float}{accu-float}
 \pgfdeclareimage[height=5cm]{accu-double}{accu-double}
+\pgfdeclareimage[height=6cm]{scalar_average}{scalar_average}
+\pgfdeclareimage[height=6cm]{simd_average}{simd_average}
+\pgfdeclareimage[height=6cm]{simd_average_vector}{simd_average_vector}
+
+
 
 \logo{\pgfuseimage{university-logo}}
 
@@ -72,27 +77,26 @@
 \end{itemize}
   \end{block}{}
 
- \begin{block}{What we achieved}
-   \begin{itemize}
-\footnotesize
-\item Leveraging what we learned in $NT^2$
- \item Demonstrated some impacts in term of performance
- \item Made using SIMD almost as simple than scalar
-\end{itemize}
+  \begin{block}{What we achieved}
+  \begin{itemize}
+  \footnotesize
+  \item Leveraging what we learned in $NT^2$
+  \item Demonstrated some impacts in term of performance
+  \item Made using SIMD almost as simple than scalar
+  \end{itemize}
   \end{block}{}
 }
 
 \frame
 {
   \frametitle{Upcoming works}
-
- \begin{block}{Google Summer of Code 2011}
-   \begin{itemize}
-\footnotesize
-\item Cleanign up the mess and boostify it
- \item Improve STL/Boost compatibility
- \item Wanted: Applications so we can have real life examples in the library
-\end{itemize}
+  \begin{block}{Google Summer of Code 2011}
+  \begin{itemize}
+  \footnotesize
+  \item Cleanign up the mess and boostify it
+  \item Improve STL/Boost compatibility
+  \item \alert{Wanted: Applications so we can have real life examples in the library}
+  \end{itemize}
   \end{block}{}
 }
 

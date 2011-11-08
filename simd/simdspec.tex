@@ -5,7 +5,7 @@
   \frametitle{Boolean values in SIMD}
   \begin{block}{The Problem}
   \lstsimdbool
-  only<2->{ \lstsimdboolresult }
+  \only<2->{ \lstsimdboolresult }
  \end{block}{}
 
   \only<3->{
@@ -25,128 +25,45 @@
 }
 
 \subsection{Shifted Loads}
-\frame {}
+\frame 
+{
+  \frametitle{Motivation}
+   \begin{center}\pgfuseimage{scalar_average}\end{center}
+}
 
-\begin{frame}
-	\frametitle{Back to RGB to Grayscale}
-	
-	\begin{itemize}
-		\item 8-bit RGB, separate channels
-		\item float interleaved RGBA
-	\end{itemize}
-	
-\end{frame}
+\frame 
+{
+  \frametitle{Getting there ...}
+   \begin{center}\pgfuseimage{simd_average}\end{center}
+}
 
-\begin{frame}[fragile]
-	\frametitle{8-bit RGB}
-	
-	\begin{lstlisting}
-	static const std::size_t N = meta::cardinal_of< pack<uint8_t> >::value;
-	for(std::size_t i = 0; i != height*width/N; ++i)
-	{
-	    pack<uint8_t> r = load< pack<uint8_t> >(red, i);
-	    pack<uint8_t> g = load< pack<uint8_t> >(green, i);
-	    pack<uint8_t> b = load< pack<uint8_t> >(blue, i);
-		
-	    pack<uint8_t> res = uint8_t(77) * r / uint8_t(255) + uint8_t(150) * g / uint8_t(255) + uint8_t(28) * b / uint8_t(255);
-	    store(res, result, i);
-	}
-	\end{lstlisting}
-\end{frame}
+\frame 
+{
+  \frametitle{The vector solution}
+   \begin{center}\pgfuseimage{simd_average_vector}\end{center}
+}
 
-\begin{frame}
-	\frametitle{Dealing with overflow}
-	
-	Two solutions:
-	\begin{itemize}
-		\item Promote to int16 -- or even to int32 and convert to float if you want to reuse the previous coefficients
-		\item Equilibrate the coefficients and use saturated arithmetic
-	\end{itemize} 	
+\frame 
+{
+  \frametitle{The vector solution}
+   \begin{block}{SIMD/Scalar version}
+   \lstfilter
+   \end{block}
+}
 
-\end{frame}
+\subsection{Promotion and Saturation}
+\frame
+{
+	\frametitle{Back to RGB2Grey}
+   	\begin{block}{8-bit RGB}
+	\lstbitsrgb
+	\end{block}{}
+}
 
-\begin{frame}[fragile]
-	\frametitle{Promote the pack}
-	
-	\begin{lstlisting}
-	uint16_t r_coeff = 77;
-	uint16_t g_coeff = 150;
-	uint16_t b_coeff = 28;
-	uint16_t div_coeff = 255;
-	\end{lstlisting}
-	
-	\begin{lstlisting}	
-	pack<uint16_t> r1, r2, g1, g2, b1, b2;
-	tie(r1, r2) = split(r);
-	tie(g1, g2) = split(g);
-	tie(b1, b2) = split(b);
-	
-	pack<uint16_t> res1 = r_coeff * r1 / div_coeff + g_coeff * g1 / div_coeff + b_coeff * b1 / div_coeff;
-	pack<uint16_t> res2 = r_coeff * r2 / div_coeff + g_coeff * g2 / div_coeff + b_coeff * b2 / div_coeff;
-	
-	pack<uint8_t> res = group(res1, res2);
-	\end{lstlisting}
-	
-\end{frame}
-
-\begin{frame}[fragile]
-	\frametitle{Saturated version -- not really a good idea}
-	
-	\begin{lstlisting}
-	uint8_t r_coeff = 26;
-	uint8_t g_coeff = 50;
-	uint8_t b_coeff = 9;
-	uint8_t div_coeff = 85;
-	\end{lstlisting}
-	
-	\begin{lstlisting}
-	pack<uint8_t> res = adds(adds(muls(r_coeff, r / div_coeff), muls(g_coeff, g / div_coeff)), muls(b_coeff, b / div_coeff));
-	\end{lstlisting}
-	
-\end{frame}
-
-\begin{frame}[fragile]
-	\frametitle{Interleaved RGBA (don't do it)}
-	
-	Data:
-	\begin{lstlisting}
-	float const* image;
-	float* result;
-	\end{lstlisting}
-	\bigskip	
-	
-	Scalar version:
-	\begin{lstlisting}
-	for(std::size_t i = 0; i != height*width; i += 4)
-	    result[i] = 0.3f * image[i] + 0.59 * image[i+1] + 0.11 * image[i+2];
-	\end{lstlisting}
-	
-\end{frame}
-
-\begin{frame}[fragile]
-	\frametitle{SIMD version}
-	
-	\begin{lstlisting}
-	static const std::size_t N = meta::cardinal_of< pack<float> >::value;
-	for(std::size_t i = 0; i != height*width/N; i += 4)
-	{
-	    pack<float> rgba1 = load< pack<float> >(image, i);
-	    pack<float> rgba2 = load< pack<float> >(image, i+1);
-	    pack<float> rgba3 = load< pack<float> >(image, i+2);
-	    pack<float> rgba4 = load< pack<float> >(image, i+3);
-	    
-	    _MM_TRANSPOSE4_PS(rgba1, rgba2, rgba3, rgba4);		
-	    
-	    pack<float> res1 = 0.3f * rgba1 + 0.59 * rgba2 + 0.11 * rgba3;
-	    store(res, result, i/4); 
-	}
-	\end{lstlisting}
-	\bigskip
-	
-	\lstinline{transpose} is \textbf{not} mapped in Boost.SIMD because it's just \textit{wrong}
-\end{frame}
-
-\begin{frame}
-	\frametitle{Timings}
-\end{frame}
-
+\frame
+{
+	\frametitle{Back to RGB2Grey}
+   	\begin{block}{Promote the pack}
+	\lstpromotergb
+	\end{block}{}
+}

@@ -58,7 +58,7 @@
 	\begin{block}{Comparisons}
 	 \begin{itemize}
 \footnotesize
-	\item \texttt{==, !=, <, <=,>} and \texttt{>=}) perform lexical comparisons.
+	\item \texttt{==, !=, <, <=,>} and \texttt{>=} perform lexical comparisons.
 	\item \texttt{eq,neq,lt,gt,le} and \texttt{ge} as functions return \texttt{pack} of boolean.
 \end{itemize}
 \end{block}{}
@@ -111,8 +111,8 @@
 	\begin{block}{Rationale}
 	\begin{itemize}\footnotesize
        \item Most SIMD ISA have fused operations (FMA, etc...)
-     \item We want ot write simple code but yet get best performances out of these
-  \item We need lazy evaluation : \texttt{proto} to the rescue
+     \item We want to write simple code but yet get best performances out of these
+  \item We need lazy evaluation : \texttt{proto} to the rescue !
         \end{itemize}
 	\end{block}{}
 	
@@ -248,77 +248,27 @@
 	\end{block}{}	
 	}
 
-\subsection{Set-up}
+\subsection{RGB to grayscale}
 \frame
 {
-	\frametitle{How to compile the examples?}	
-	
-	Pre-requisites:
-	\begin{itemize}
-		\item Python 2.6+
-		\item CMake 2.6+
-		\item Git 1.6+
-		\item Boost 1.46+ or SVN trunk
-		\item $NT^2$ git master
-		\item Preferably a Linux/x86/GCC setup with GCC 4.6+
-	\end{itemize}
-	\bigskip
-	
-	\texttt{BOOST\_ROOT} must point to Boost\\
-	\texttt{NT2\_SOURCE\_ROOT} must point to $NT^2$
-	\bigskip
-	
-	Examples are at:\\
-	\texttt{git://github.com/MetaScale/boost-con-2011.git}
+  \frametitle{RGB to grayscale}
+  \begin{block}{Scalar version}
+  \lstrgb
+  \end{block}{}	
+
+  \begin{block}{SIMD version}
+  \lstrgbsimd
+  \end{block}{}	
 }
-
-\subsection{RGB to grayscale}
-\begin{frame}[fragile]
-	\frametitle{RGB to grayscale}
-	
-	Data:\\
-\bigskip
-	\begin{lstlisting}
-	float const *red, *green, *blue;
-	float* result;
-	\end{lstlisting}
-	
-\bigskip
-	Scalar version:\\
-\bigskip
-	\begin{lstlisting}
-	for(std::size_t i = 0; i != height*width; ++i)
-	    result[i] = 0.3f * red[i] + 0.59f * green[i] + 0.11f * blue[i]; 
-	\end{lstlisting}
-	
-\end{frame}
-
-\begin{frame}[fragile]
-	\frametitle{SIMD version}
-	
-	\begin{lstlisting}
-	std::size_t N = meta::cardinal_of<pack<float>>::value;
-	for(std::size_t i = 0; i != height*width/N; ++i)
-	{
-	    pack<float> r  = load< pack<float> >(red, i);
-	    pack<float> g = load< pack<float> >(green, i);
-	    pack<float> b = load< pack<float> >(blue, i);
-		
-	    pack<float> res = 0.3f * r + 0.59f * g + 0.11f * b;
-	    store(res, result, i);
-	}
-	\end{lstlisting}
-	
-\end{frame}
 
 \begin{frame}
 	\frametitle{Easy enough, but what if...}
 
 	\begin{itemize}
-		\item ... i've got interleaved RGB or RGBA?
-		\item ... i've got 8-bit integers and not floats?
+		\item ... I've got interleaved RGB or RGBA?
+		\item ... I've got 8-bit integers and not floats?
 	\end{itemize}
 	
-	Can be complicated, we'll see that later.
+	Sounds more complicated, we'll see that later.
 	
 \end{frame}

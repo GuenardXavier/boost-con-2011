@@ -12,9 +12,8 @@
 		      for high-performance numerical computation
   \item Boost.SIMD is the extraction of the SIMD subcomponent of the
 		      library
-   \item GSoC project this summer to help make it ready for review 
-  \item This talk is here to present an executive summary of what's inside this
-upcoming library proposal.
+   \item A GSoC project is scheduled this summer to help make it ready for review 
+  \item This talk is here to present what's inside the proposal.
   \end{itemize}
   \end{block}{}
 }
@@ -33,7 +32,7 @@ upcoming library proposal.
 	\begin{itemize}
 		\item Single Instruction, Multiple Data
 		\item Operations applied on NxT elements within a single register
-		\item Up to N times faster than regualr ALU/FPU
+		\item Up to N times faster than regular ALU/FPU
 	\end{itemize}
   \end{block}{}	
   \end{column} 
@@ -98,6 +97,7 @@ upcoming library proposal.
 			\item Memory is well agenced
 			\item Code is inherently vectorizable
 		\end{itemize}
+		\item Compiled functions are not vectorized (I look at you libm !)
 		\item Compilers don't always have enough static information to know what they can vectorize
 		\item Designing for vectorization is a human process
 	\end{itemize}
@@ -106,17 +106,16 @@ upcoming library proposal.
 	\begin{itemize}
 \footnotesize
 		\item Declaring SIMD parallelism explicitly is the best way
-              to ensure your code gets vectorized
+              to get your code vectorized
         \item To be demonstrated by this presentation
     \end{itemize}
 \end{block}{}
 }
 
-\begin{frame}
-	\frametitle{Overview}	
-	\begin{itemize}
-		\item Interface and rationale
-		\item Interaction with standard tools
-		\item SIMD programming idioms
-	\end{itemize}
-\end{frame}
+\AtBeginSection[]
+{
+  \begin{frame}<beamer>
+    \frametitle{Talk Layout}
+    \tableofcontents[currentsection,subsectionstyle=hide/hide/hide]
+  \end{frame}
+}
