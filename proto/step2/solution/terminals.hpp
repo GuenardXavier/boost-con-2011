@@ -21,6 +21,11 @@
  ******************************************************************************/
 struct variable_tag {};
 
+template<class  N>
+struct  nth_var
+      : boost::proto::nullary_expr< variable_tag, N >
+{};
+
 /*******************************************************************************
  * Switch based Grammar - Variable case
  * Note how the fact to have used nullary_expr allow clean separation from the
@@ -32,9 +37,9 @@ struct    analytical_function_cases
         : boost::proto::nullary_expr< variable_tag, boost::proto::_ >
 {};
 
-analytical_expression< boost::proto::nullary_expr< variable_tag,boost::mpl::int_<0> >::type > const _x;
-analytical_expression< boost::proto::nullary_expr< variable_tag,boost::mpl::int_<1> >::type > const _y;
-analytical_expression< boost::proto::nullary_expr< variable_tag,boost::mpl::int_<2> >::type > const _z;
+analytical_expression< nth_var< boost::mpl::int_<0> >::type > const _x;
+analytical_expression< nth_var< boost::mpl::int_<1> >::type > const _y;
+analytical_expression< nth_var< boost::mpl::int_<2> >::type > const _z;
 
 /*******************************************************************************
  * Switch based Transform - Variable case

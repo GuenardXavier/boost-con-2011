@@ -14,18 +14,19 @@
 #include "terminals.hpp"
 #include "constant.hpp"
 #include "derivate.hpp"
+#include "simplify.hpp"
 
 int main()
 {
-  std::cout << derivate( _x + _x, _x )(1.5)         << "\n";
-  std::cout << derivate( _x + 4 , _x )(1.5)         << "\n";
-  std::cout << derivate( 3  + _x, _x )(1.5)         << "\n";
-  std::cout << derivate( 3  * _x, _x )(1.5)         << "\n";
-  std::cout << derivate( _y * _x, _x )(10,3)        << "\n";
-  std::cout << derivate( (_x-1) * (_x+1), _x )(10)  << "\n";
-  std::cout << derivate( 1/_x, _x )(10)             << "\n";
-  std::cout << derivate( cos(_x), _x )(3.14159/2)   << "\n";
-  std::cout << derivate<2>( _x*_x*_x*_x, _x )(10)   << "\n";
-  std::cout << derivate<4>( cos(_x), _x )(0)        << "\n";
+  boost::proto::display_expr(simplify(derivate<4>( _x*_x*_x*(_y*_x), _x )));
 
+  ////std::cout << derivate( _y * _x, _x )(10,3)        << "\n";
+  ////std::cout << derivate( (_x-1) * (_x+1), _x )(10)  << "\n";
+  ////std::cout << derivate( 1/_x, _x )(10)             << "\n";
+  ////std::cout << derivate( cos(_x), _x )(3.14159/2)   << "\n";
+  ////std::cout << derivate<2>( _x*_x*_x*_x, _x )(10)   << "\n";
+  ////std::cout << derivate<4>( cos(_x), _x )(0)        << "\n";
+  ////std::cout << derivate( cos(_x*_y) + _z*sin(_z-_y), _x )(1,1,1)        << "\n";
+  ////std::cout << derivate( cos(_x*_y) + _z*sin(_z-_y), _y )(1,1,1)        << "\n";
+  ////std::cout << derivate( cos(_x*_y) + _z*sin(_z-_y), _z )(1,1,1)        << "\n";
 }

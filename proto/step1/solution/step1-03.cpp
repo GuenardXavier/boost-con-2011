@@ -124,14 +124,14 @@ struct  analytical_function
           >
         , cos_<analytical_function>
         , sin_<analytical_function>
-				, boost::proto::or_
-					<	boost::proto::plus<analytical_function,analytical_function>
-					, boost::proto::negate<analytical_function>
-					, boost::proto::minus<analytical_function,analytical_function>
-					, boost::proto::multiplies<analytical_function,analytical_function>
-					, boost::proto::divides<analytical_function,analytical_function>
-					>
-				>
+        , boost::proto::or_
+          < boost::proto::plus<analytical_function,analytical_function>
+          , boost::proto::negate<analytical_function>
+          , boost::proto::minus<analytical_function,analytical_function>
+          , boost::proto::multiplies<analytical_function,analytical_function>
+          , boost::proto::divides<analytical_function,analytical_function>
+          >
+        >
 {};
 
 /*******************************************************************************
@@ -250,5 +250,6 @@ int main()
 {
   std::cout << (cos(_x*3.14159))(0.25) << "\n";
   std::cout << (cos(_x)*cos(_x) + sin(_x)*sin(_x))(1.23456) << "\n";
+  std::cout << (_x/_y)(4.,3.) << "\n";
 
 }

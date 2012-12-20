@@ -11,6 +11,8 @@
 #ifndef DERIVATE_HPP_INCLUDED
 #define DERIVATE_HPP_INCLUDED
 
+#include "simplify.hpp"
+
 /*******************************************************************************
  * Switch based derivate_ cases
  ******************************************************************************/
@@ -70,10 +72,9 @@ struct    derivate_cases
         ::case_< boost::proto::tag::negate >
         : boost::proto::when
           < boost::proto::negate< derivate_cases >
-          , boost::proto::functional::make_negate
-            (
-              derivate_(boost::proto::_child0)
-            )
+          , simplify_ ( boost::proto::functional
+                        ::make_negate( derivate_(boost::proto::_child0) )
+                      )
           >
 {};
 
@@ -82,10 +83,11 @@ struct    derivate_cases
         ::case_< boost::proto::tag::plus >
         : boost::proto::when
           < boost::proto::plus< derivate_cases, derivate_cases >
-          , boost::proto::functional::make_plus
-            ( derivate_(boost::proto::_left)
-            , derivate_(boost::proto::_right)
-            )
+          , simplify_ ( boost::proto::functional::make_plus
+                        ( derivate_(boost::proto::_left)
+                        , derivate_(boost::proto::_right)
+                        )
+                      )
           >
 {};
 
@@ -94,10 +96,11 @@ struct    derivate_cases
         ::case_< boost::proto::tag::minus >
         : boost::proto::when
           < boost::proto::minus< derivate_cases, derivate_cases >
-          , boost::proto::functional::make_minus
-            ( derivate_(boost::proto::_left)
-            , derivate_(boost::proto::_right)
-            )
+          , simplify_ ( boost::proto::functional::make_minus
+                        ( derivate_(boost::proto::_left)
+                        , derivate_(boost::proto::_right)
+                        )
+                      )
           >
 {};
 
@@ -105,17 +108,18 @@ template<>
 struct    derivate_cases
         ::case_< boost::proto::tag::multiplies >
         : boost::proto::when
-          < boost::proto::plus< derivate_cases, derivate_cases >
-          , boost::proto::functional::make_plus
-            ( boost::proto::functional::make_multiplies
-              ( boost::proto::_left
-              , derivate_(boost::proto::_right)
-              )
-            , boost::proto::functional::make_multiplies
-              ( derivate_(boost::proto::_left)
-              , boost::proto::_right
-              )
-            )
+          < boost::proto::multiplies< derivate_cases, derivate_cases >
+          , simplify_ ( boost::proto::functional::make_plus
+                        ( boost::proto::functional::make_multiplies
+                          ( boost::proto::_left
+                          , derivate_(boost::proto::_right)
+                          )
+                        , boost::proto::functional::make_multiplies
+                          ( derivate_(boost::proto::_left)
+                          , boost::proto::_right
+                          )
+                        )
+                      )
           >
 {};
 
@@ -124,22 +128,23 @@ struct    derivate_cases
         ::case_< boost::proto::tag::divides >
         : boost::proto::when
           < boost::proto::divides< derivate_cases, derivate_cases >
-          , boost::proto::functional::make_divides
-            ( boost::proto::functional::make_minus
-                ( boost::proto::functional::make_multiplies
-                  ( boost::proto::_left
-                  , derivate_(boost::proto::_right)
-                  )
-                , boost::proto::functional::make_multiplies
-                  ( derivate_(boost::proto::_left)
-                  , boost::proto::_right
-                  )
-                )
-            , boost::proto::functional::make_multiplies
-              ( boost::proto::_right
-              , boost::proto::_right
-              )
-            )
+          , simplify_ ( boost::proto::functional::make_divides
+                        ( boost::proto::functional::make_minus
+                            ( boost::proto::functional::make_multiplies
+                              ( boost::proto::_left
+                              , derivate_(boost::proto::_right)
+                              )
+                            , boost::proto::functional::make_multiplies
+                              ( derivate_(boost::proto::_left)
+                              , boost::proto::_right
+                              )
+                            )
+                        , boost::proto::functional::make_multiplies
+                          ( boost::proto::_right
+                          , boost::proto::_right
+                          )
+                        )
+                      )
           >
 {};
 
@@ -148,16 +153,17 @@ struct    derivate_cases
         ::case_< cos_tag >
         : boost::proto::when
           < boost::proto::unary_expr< cos_tag, derivate_cases >
-          , boost::proto::functional::make_multiplies
-            ( derivate_(boost::proto::_child0)
-            , boost::proto::functional::make_negate
-              (
-                boost::proto::functional::make_expr<sin_tag>
-                (
-                  boost::proto::_child0
-                )
-              )
-            )
+          , simplify_ ( boost::proto::functional::make_multiplies
+                        ( derivate_(boost::proto::_child0)
+                        , boost::proto::functional::make_negate
+                          (
+                            boost::proto::functional::make_expr<sin_tag>
+                            (
+                              boost::proto::_child0
+                            )
+                          )
+                        )
+                      )
           >
 {};
 
@@ -166,13 +172,14 @@ struct    derivate_cases
         ::case_< sin_tag >
         : boost::proto::when
           < boost::proto::unary_expr< sin_tag, derivate_cases >
-          , boost::proto::functional::make_multiplies
-            ( derivate_(boost::proto::_child0)
-            , boost::proto::functional::make_expr<cos_tag>
-              (
-                boost::proto::_child0
-              )
-            )
+          ,simplify_ ( boost::proto::functional::make_multiplies
+                      ( derivate_(boost::proto::_child0)
+                      , boost::proto::functional::make_expr<cos_tag>
+                        (
+                          boost::proto::_child0
+                        )
+                      )
+                    )
           >
 {};
 

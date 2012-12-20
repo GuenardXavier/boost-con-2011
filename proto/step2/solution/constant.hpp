@@ -14,27 +14,31 @@
 struct constant_tag {};
 
 template<int N>
+struct  constant_grammar
+      : boost::proto::nullary_expr< constant_tag
+                                  , boost::mpl::int_<N>
+                                  >
+{};
+
+struct  any_constant_grammar
+      : boost::proto::nullary_expr< constant_tag
+                                  , boost::proto::_
+                                  >
+{};
+
+template<int N>
 struct  constant_
-      : analytical_expression
-        < typename boost::proto::nullary_expr < constant_tag
-                                              , boost::mpl::int_<N>
-                                              >::type
-        >
+      : analytical_expression<typename constant_grammar<N>::type>
 {};
 
 template<>
-struct    analytical_function_cases
-        ::case_< constant_tag >
-        : boost::proto::unary_expr< constant_tag, boost::proto::_ >
+struct analytical_function_cases::case_< constant_tag > : any_constant_grammar
 {};
 
 template<>
 struct    evaluate_cases
         ::case_< constant_tag >
-        : boost::proto::when
-          < boost::proto::nullary_expr< constant_tag, boost::proto::_ >
-          , boost::proto::_value
-          >
+        : boost::proto::when<any_constant_grammar, boost::proto::_value>
 {};
 
 #endif
