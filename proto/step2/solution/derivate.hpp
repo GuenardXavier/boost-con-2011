@@ -226,19 +226,29 @@ struct nth_derivative<1>
 
 
 template<int Degree,typename Function, typename Variable> inline
-typename boost::result_of<nth_derivative<Degree>(Function const&, Variable const&)>::type
+typename boost::result_of
+	<simplify_(typename boost::result_of<nth_derivative<Degree>(Function const&
+                                                                   , Variable const&
+                                                                   )>::type const&
+                  )
+        >::type
 derivate( Function const& f, Variable const& v )
 {
   nth_derivative<Degree> callee;
-  return callee(f,v);
+  return simplify(callee(f,v));
 }
 
 template<typename Function, typename Variable> inline
-typename boost::result_of<derivate_(Function const&, Variable const&)>::type
+typename boost::result_of
+        <simplify_(typename boost::result_of<derivate_( Function const&
+                                                      , Variable const&
+                                                      )>::type const&
+                  )
+        >::type
 derivate( Function const& f, Variable const& v )
 {
   derivate_ callee;
-  return callee(f,v);
+  return simplify(callee(f,v));
 }
 
 #endif
